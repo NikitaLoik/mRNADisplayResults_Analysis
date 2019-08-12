@@ -1,0 +1,4 @@
+venv_mrna_display/*
+.vscode/*
+.ipynb_checkpoints/*
+__pycache__/*

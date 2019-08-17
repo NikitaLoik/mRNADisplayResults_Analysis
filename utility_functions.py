@@ -11,24 +11,24 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 rcParams['font.family'] = 'monospace'
 
-import global_parameters as gs
+import global_parameters as gp
 
 # =============================================================================
-def todays_date():
+def get_todays_date():
     '''
     returns todays date in format YYYYMMDD
     '''
     return datetime.date.today().strftime('%Y%m%d')
 
 
-def dna_coding_sequence (
+def dna_coding_sequence(
         dna_sequence: str,
         quality_sequence: str,
-        start_sequence: str,
-        stop_sequence: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     validates the dna coding sequence based on
@@ -37,7 +37,7 @@ def dna_coding_sequence (
     uses ONLY ONE stop sequence;
     returns ONLY ONE coding sequence
     '''
-    quality_score_string = gs.QUALITY_SCORE_STRING
+    quality_score_string = gp.QUALITY_SCORE_STRING
     threshold_quality_string = quality_score_string[quality_score:]
             
     start_index = dna_sequence.find(start_sequence) + len(start_sequence)
@@ -63,8 +63,8 @@ def translation(
     UAG (amber) — *
     UGA (opal) — &
     '''
-    translation_code = gs.TRANSLATION_CODE
-    transcription_code = gs.TRANSCRIPTION_CODE
+    translation_code = gp.TRANSLATION_CODE
+    transcription_code = gp.TRANSCRIPTION_CODE
     
     # Convert DNA to RNA.
     rna_sequence = ''
@@ -83,54 +83,53 @@ def translation(
     return peptide
 
 
-# Define single_selection_cycle_summary function,
-# which returns the occurrence of coding_sequences, grouped by peptide
-# {peptideY: {coding_sequence_YZ: occurrence_YZ}}
+# Get the occurrence of coding_sequences, grouped by peptide
+# {peptide_Y: {coding_sequence_YZ: occurrence_YZ}}
 
-def single_selection_cycle_summary(
+def get_single_cycle_summary(
         fastq_file_path: str,
-        start_sequence: str,
-        stop_sequence: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     
-    with open(fastq_file_path, 'r') as raw_data_file:
-        lines = raw_data_file.readlines()
+    with open(fastq_file_path, 'r') as f_in:
+        lines = f_in.readlines()
 
     # to store the results from a single cycle of selection,
-    # create an empty single_selection_cycle_summary dictionary:
+    # create an empty single_cycle_summary dictionary:
     # {peptideY:    {coding_sequence_YZ:    occurrence_YZ}}
-    single_selection_cycle_summary = {}
+    single_cycle_summary = {}
 
     # go through the NGS-data file (.fastq) line by line
     # with the results from a single cycle of selection,
-    # populate single_selection_cycle_summary 
+    # populate single_cycle_summary 
     for i, line in enumerate(lines):
         # Check whether the line contains a valid sequence
         if start_sequence in line and stop_sequence in line:
             coding_sequence = dna_coding_sequence(
                 line,
                 lines[i + 2],
-                start_sequence,
-                stop_sequence,
                 cdna_min_length,
                 cdna_max_length,
-                quality_score)                      
+                start_sequence,
+                stop_sequence,
+                quality_score,)                      
             if coding_sequence != None:
                 # translate dna or RNA sequence into peptide
                 peptide_sequence = translation(coding_sequence)
-                # add sequence to a single_selection_cycle_summary
-                if peptide_sequence not in single_selection_cycle_summary:
-                    single_selection_cycle_summary[str(peptide_sequence)] = {str(coding_sequence): 1}
+                # add sequence to a single_cycle_summary
+                if peptide_sequence not in single_cycle_summary:
+                    single_cycle_summary[str(peptide_sequence)] = {str(coding_sequence): 1}
                 else:
-                    if coding_sequence not in single_selection_cycle_summary[str(peptide_sequence)]:
-                        single_selection_cycle_summary[str(peptide_sequence)][str(coding_sequence)] = 1
+                    if coding_sequence not in single_cycle_summary[str(peptide_sequence)]:
+                        single_cycle_summary[str(peptide_sequence)][str(coding_sequence)] = 1
                     else:
-                        single_selection_cycle_summary[str(peptide_sequence)][str(coding_sequence)] += 1
+                        single_cycle_summary[str(peptide_sequence)][str(coding_sequence)] += 1
 
-    return single_selection_cycle_summary
+    return single_cycle_summary
 
 
 def hamming_distance(
@@ -160,7 +159,7 @@ def hamming_distance(
 def hamming_distance_based_formating(
         sequence_1: str,
         sequence_2: str,
-        ):
+        ) -> str:
     '''
     # returns formated sequence,
     # such that mismatches are capitalised,
@@ -185,13 +184,13 @@ def hamming_distance_based_formating(
 
 
 
-def complete_selection_summary(
+def get_complete_selection_summary(
         data_directory_path: str,
-        start_sequence: str,
-        stop_sequence: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns the occurrence of coding sequences
@@ -220,16 +219,16 @@ def complete_selection_summary(
                 #print cycle_number
             
             # B. get single cycle results
-            selection_cycle_summary = single_selection_cycle_summary(
+            single_cycle_summary = get_single_cycle_summary(
                 file_path,
-                start_sequence,
-                stop_sequence,
                 cdna_min_length,
                 cdna_max_length,
-                quality_score)
+                start_sequence,
+                stop_sequence,
+                quality_score,)
              
             # C populate complete selection summary
-            complete_selection_summary[cycle_number] = selection_cycle_summary
+            complete_selection_summary[cycle_number] = single_cycle_summary
             
             # ConcatenatedResultsList-Test Print
             #print ConcatenatedResultsList
@@ -239,23 +238,23 @@ def complete_selection_summary(
 
 def peptides_occurrences_by_cycle(
         data_directory_path: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns the occurrences of peptides groupped by cycle:
     {cycle_X:    {peptideXY:    occurrence_XY}}
     '''
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
-        quality_score)
+        start_sequence,
+        stop_sequence,
+        quality_score,)
     
     peptides_occurrences_by_cycle = {}
     for cycle in selection_summary:
@@ -270,23 +269,23 @@ def peptides_occurrences_by_cycle(
 
 def dnas_occurrences_by_cycle(
         data_directory_path: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns the occurrences of dnas groupped by cycle:
     {cycle_X:    {dna_XY:    occurrence_XY}}
     '''
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
-        quality_score)
+        start_sequence,
+        stop_sequence,
+        quality_score,)
     
     dnas_occurrences_by_cycle = {}
     for cycle in selection_summary:
@@ -299,50 +298,50 @@ def dnas_occurrences_by_cycle(
     return dnas_occurrences_by_cycle
 
 
-def total_reads_by_cycle(
+def get_total_reads_per_cycle(
         data_directory_path: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
-    returns number of reads by cycle:
-    {cycle_X:    TotalReads_X}
+    returns number of reads per cycle:
+    {cycle_X:    total_reads_X}
     '''
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
+        start_sequence,
+        stop_sequence,
         quality_score)
 
     peptides_by_cycle = peptides_occurrences_by_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
     
-    total_reads_by_cycle = {}
+    total_reads_per_cycle = {}
     for cycle in selection_summary:
-        total_reads_by_cycle[cycle] = sum(peptides_by_cycle[cycle].values())
+        total_reads_per_cycle[cycle] = sum(peptides_by_cycle[cycle].values())
         
-    return total_reads_by_cycle
+    return total_reads_per_cycle
 
 
 def base_cycle_sorted_peptides_list(
         data_directory_path: str,
-        base_selection_cycle_number: int,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        base_cycle: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns list of peptides in base cycle sorted by their occurrence:
@@ -353,13 +352,13 @@ def base_cycle_sorted_peptides_list(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
             
     peptides_occurrences_in_base_cycle = peptides_by_cycle[
-        base_selection_cycle_number]
+        base_cycle]
     base_cycle_sorted_peptides_list = sorted(
         peptides_occurrences_in_base_cycle,
         key=peptides_occurrences_in_base_cycle.get,
@@ -369,12 +368,12 @@ def base_cycle_sorted_peptides_list(
 
 def base_cycle_sorted_dnas_list(
         data_directory_path: str,
-        base_selection_cycle_number: int,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        base_cycle: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns list of dnas in base cycle sorted by their occurrence:
@@ -384,12 +383,12 @@ def base_cycle_sorted_dnas_list(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
             
-    dnas_occurrences_in_base_cycle = dnas_by_cycle[base_selection_cycle_number]
+    dnas_occurrences_in_base_cycle = dnas_by_cycle[base_cycle]
     base_cycle_sorted_dnas_list = sorted(
         dnas_occurrences_in_base_cycle,
         key=dnas_occurrences_in_base_cycle.get,
@@ -398,33 +397,33 @@ def base_cycle_sorted_dnas_list(
     return base_cycle_sorted_dnas_list
 
 
-def peptides_rank_in_base_cycle(
+def get_peptides_rank_in_base_cycle(
         data_directory_path: str,
-        base_selection_cycle_number: int,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        base_cycle: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
 
     peptides_by_cycle = peptides_occurrences_by_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
 
     base_cycle_sorted_peptides = base_cycle_sorted_peptides_list(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
     
     base_peptide_count = 0
@@ -433,7 +432,7 @@ def peptides_rank_in_base_cycle(
     peptides_rank_in_base_cycle = {}
     
     for peptide in base_cycle_sorted_peptides:
-        peptideCount = peptides_by_cycle[base_selection_cycle_number][peptide]
+        peptideCount = peptides_by_cycle[base_cycle][peptide]
         if peptideCount < base_peptide_count:
             peptide_rank += 1
         
@@ -446,22 +445,22 @@ def peptides_rank_in_base_cycle(
 # occurrences is a bad word-choice here
 def dna_clones_occurrences_by_cycle_by_peptide(
         data_directory_path: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        start_sequence: str,
-        stop_sequence: str,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     '''
     returns number of clones for each peptide groupped by cycle:
     {Selectioncycle_X:    {peptideXY:    dnaClonesoccurrences}}
     '''
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
+        start_sequence,
+        stop_sequence,
         quality_score)
     
     dna_clones_occurrences_by_cycle_by_peptide = {}
@@ -510,32 +509,32 @@ def dnas_appearances_by_cycle(
                 dnas_appearances_by_cycle[dna] += [cycle]
     return dnas_appearances_by_cycle
 
-
-# Define selection_summary_report, which, for the top_n_peptides,
+# =============================================================================
+# Get selection_summary_report, which, for the n_top_peptides,
 # returns a summary table (.txt) and provides a summary grpaph (.png).
-def selection_summary_report(
+def get_selection_summary(
         data_directory_path: str,
-        base_selection_cycle_number: int,
-        top_n_peptides: int,
-        start_sequence: str,
-        stop_sequence: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
-        file_name: str
+        base_cycle: int,
+        n_top_peptides: int,
+        file_name: str,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     
-    today = todays_date() 
+    today = get_todays_date() 
     
-    selection_summary_csv = f"{today}_selection_summary_{file_name}.csv"
-    selection_summary_report_file = open(selection_summary_csv, 'w')
+    selection_summary_csv_name = f"{today}_selection_summary_{file_name}.csv"
+    selection_summary_file = open(selection_summary_csv_name, 'w')
     
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
+        start_sequence,
+        stop_sequence,
         quality_score)
 
     sorted_cycles_list = sorted(selection_summary.keys())
@@ -544,59 +543,61 @@ def selection_summary_report(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
 
-    total_peptides_by_cycle = total_reads_by_cycle(
+    total_peptides_by_cycle = get_total_reads_per_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
     
     base_cycle_sorted_peptides = base_cycle_sorted_peptides_list(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
+    
     base_cycle_top_sorted_peptides = base_cycle_sorted_peptides[
-        0 : (top_n_peptides)]
+        0 : (n_top_peptides)]
 
-    base_cycle_peptides_rank = peptides_rank_in_base_cycle(
+    base_cycle_peptides_rank = get_peptides_rank_in_base_cycle(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
         
-    selection_summary_report_file.write(
+    selection_summary_file.write(
         f"peptide sequence,rank (#),cdna mutants,")
     for cycle in sorted_cycles_list:
-        selection_summary_report_file.write(
+        selection_summary_file.write(
             f"C{cycle}count (#) [frequency(%)],")
-    selection_summary_report_file.write(f"\n")
+    selection_summary_file.write(f"\n")
     
     for peptide in base_cycle_top_sorted_peptides:
-        base_cycle_peptide_fraction = float(
-            (peptides_by_cycle[cycle].get(peptide, 0)))/float(
-                total_peptides_by_cycle[base_selection_cycle_number])
+        # base_cycle_peptide_fraction = float(
+        #     (peptides_by_cycle[cycle].get(peptide, 0)))/float(
+        #         total_peptides_by_cycle[base_cycle])
         peptide_rank = base_cycle_peptides_rank[peptide]
         formated_peptide = hamming_distance_based_formating(
-            base_cycle_top_sorted_peptides[0], peptide)
+            base_cycle_top_sorted_peptides[0],
+            peptide)
         peptide_cdna_mutants = len(
-            selection_summary[base_selection_cycle_number][peptide])
-        selection_summary_report_file.write(
+            selection_summary[base_cycle][peptide])
+        selection_summary_file.write(
             f"{formated_peptide},{peptide_rank},{peptide_cdna_mutants},")
             
         for cycle in sorted_cycles_list:
@@ -604,140 +605,146 @@ def selection_summary_report(
                 (peptides_by_cycle[cycle].get(peptide, 0)))/float(
                     total_peptides_by_cycle[cycle])
 
-            base_fraction = peptide_fraction
+            # base_fraction = peptide_fraction
             
-            selection_summary_report_file.write(
+            selection_summary_file.write(
                 f"{str(peptides_by_cycle[cycle].get(peptide, 0))}"
                 f" [{peptide_fraction:.1%}],")
             
-            base_fraction = peptide_fraction
-        selection_summary_report_file.write(f"\n")
+            # base_fraction = peptide_fraction
+        selection_summary_file.write(f"\n")
         
-    selection_summary_report_file.write(
+    selection_summary_file.write(
         f"total count (#),,")
     for cycle in sorted_cycles_list:
-        selection_summary_report_file.write(
+        selection_summary_file.write(
             f"{str(total_peptides_by_cycle[cycle])},")
-    selection_summary_report_file.write('\n\n\n')
+    selection_summary_file.write('\n\n\n')
             
-    selection_summary_report_file.close()
+    selection_summary_file.close()
     
 # =============================================================================
-   
-    # Create a figure 8x6 inches, 500 dots per inch
-    plt.figure(figsize = (8, 6),
-               dpi = 500)
-    # Create 'ggplot' style
+    # Use 'ggplot' style
     plt.style.use('fivethirtyeight')
-    # Create a new subplot from a grid of 1x1
-    Graph = plt.subplot(1, 1, 1)
-    
+    # Create a figure 8 x 6 inches, 300 dots per inch.
+    fig, ax = plt.subplots(
+        1, 1,
+        figsize = (8, 6),
+        dpi = 300)
     Xs = []
     Ys = []
-
-    # Map colours onto lines  
+    # Map colors onto lines  
     c_norm  = matplotlib.colors.Normalize(
         vmin = 0,
-        vmax = top_n_peptides - 1)
-    scalarMap = matplotlib.cm.ScalarMappable(
+        vmax = n_top_peptides - 1)
+    scalar_map = matplotlib.cm.ScalarMappable(
         norm = c_norm,
         cmap = 'gist_rainbow')
     
     peptide_labels = []
-    
     for peptide in base_cycle_top_sorted_peptides:
     #for peptide in Top24peptidesKDs:
-        peptidesFractions_BY_cycle = []
+        peptides_fractions_by_cycle = []
         for cycle in sorted_cycles_list:
-            peptidesFractions_BY_cycle += [float(
-                (peptides_by_cycle[cycle].get(peptide, 0)))/float(
-                    total_peptides_by_cycle[cycle])]
+            peptides_fractions_by_cycle.append(
+                float((peptides_by_cycle[cycle].get(peptide, 0)))
+                / float(total_peptides_by_cycle[cycle]))
         
         x = sorted_cycles_list
-        y = peptidesFractions_BY_cycle
+        y = peptides_fractions_by_cycle
         Xs += x
         Ys += y
+        # print(Ys)
         
         peptide_rank = base_cycle_peptides_rank[peptide]
-        #peptideColour = scalarMap.to_rgba(peptide_rank)
-        peptideColour = scalarMap.to_rgba(
+        #peptide_color = scalar_map.to_rgba(peptide_rank)
+        peptide_color = scalar_map.to_rgba(
             base_cycle_top_sorted_peptides.index(peptide))
-        formated_peptide = hamming_distance_based_formating
-        (base_cycle_top_sorted_peptides[0], peptide)
+        formated_peptide = hamming_distance_based_formating(
+            base_cycle_top_sorted_peptides[0],
+            peptide)
         
-        peptide_label =  formated_peptide + ' (' + str(peptide_rank) +')'
+        peptide_label =  f"{formated_peptide} ({peptide_rank})"
         
         #Set peptide_label
         peptide_labels += [peptide_label]
         
-        plt.plot(x, y,
-                 'o-',
-                 c = peptideColour,
-                 lw = 2.0,
-                 ms = 4.0,
-                 mew = 0.1,
-                 mec = '#191919')
+        ax.plot(
+            x, y,
+            'o-',
+            c = peptide_color,
+            lw = 2.0,
+            ms = 4.0,
+            mew = 0.1,
+            mec = '#191919')
 
-    XMin = min(Xs) - 0.05*(max(Xs) - min(Xs))
-    XMax = max(Xs) + 0.05*(max(Xs) - min(Xs))
-    YMin = min(Ys) - 0.05*(max(Ys) - min(Ys))
-    YMax = max(Ys) + 0.05*(max(Ys) - min(Ys))
+    x_margin = 0.05 * (max(Xs) - min(Xs))
+    x_min = min(Xs) - x_margin
+    x_max = max(Xs) + x_margin
+    y_margin = 0.05 * (max(Ys) - min(Ys))
+    y_min = min(Ys) - y_margin
+    y_max = max(Ys) + y_margin
     
-    plt.axis([XMin, XMax, YMin, YMax])
+    ax.axis([x_min, x_max, y_min, y_max])
     
-    plt.xticks(fontsize = 10)
-    plt.yticks(fontsize = 10)
+    ax.tick_params(labelsize = 10)
+    ax.tick_params(labelsize = 10)
     
-    plt.xlabel("Selection Cycle (#)",
-               fontsize = 10)
-    plt.ylabel("peptide Fraction",
-               fontsize = 10)
+    ax.set_xlabel(
+        "Selection Cycle #",
+        fontsize = 10)
+    ax.set_ylabel(
+        "Peptide Fraction",
+        fontsize = 10)
     
-    legend = plt.legend(peptide_labels,
-                        title = 'cyclic-peptide random region',
-                        loc = 'upper center',
-                        bbox_to_anchor = (0.5, -0.10),
-                        fancybox = True,
-                        shadow = False,
-                        fontsize = 10,
-                        ncol = 3)
+    legend = plt.legend(
+        peptide_labels,
+        title = 'cyclic-peptide random region',
+        loc = 'upper center',
+        bbox_to_anchor = (0.5, -0.10),
+        fancybox = True,
+        shadow = False,
+        fontsize = 10,
+        ncol = 3)
     
-    Graph.get_legend().get_title().set_size('small')
+    ax.get_legend().get_title().set_size('small')
     
     selection_summary_png_path = f"{today}_selection_summary_{file_name}.png"
     
-    plt.savefig(selection_summary_png_path,
-                bbox_extra_artists = [legend],
-                bbox_inches = 'tight',
-                dpi = 300)
+    fig.savefig(
+        selection_summary_png_path,
+        bbox_extra_artists = [legend],
+        bbox_inches = 'tight',
+        dpi = 300)
     plt.show()
     plt.close()
 
 
+# =============================================================================
 def dna_mutants_analysis(
         data_directory_path: str,
-        base_selection_cycle_number: int,
-        top_n_peptides: int,
-        start_sequence: str,
-        stop_sequence: str,
+        base_cycle: int,
+        n_top_peptides: int,
         file_name: str,
-        cdna_min_length: int,
-        cdna_max_length: int,
-        quality_score: int,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
         
     
-    today = todays_date() 
+    today = get_todays_date() 
     
     dna_mutants_analysis_csv =  f"{today}_dnas_mutants_analysis_{file_name}.csv"
     dna_mutants_analysis_file = open(dna_mutants_analysis_csv, 'w')
     
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
+        start_sequence,
+        stop_sequence,
         quality_score)
     sorted_cycles_list = sorted(selection_summary.keys())
     
@@ -745,37 +752,37 @@ def dna_mutants_analysis(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
-        )
-    total_peptides_by_cycle = total_reads_by_cycle(
-        data_directory_path,
-        cdna_min_length,
-        cdna_max_length,
         quality_score,
-        start_sequence,
-        stop_sequence,
         )
+    # total_peptides_by_cycle = get_total_reads_per_cycle(
+    #     data_directory_path,
+    #     cdna_min_length,
+    #     cdna_max_length,
+    #     start_sequence,
+    #     stop_sequence,
+    #     quality_score,
+    #     )
     
     base_cycle_sorted_peptides = base_cycle_sorted_peptides_list(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
-    base_cycle_top_sorted_peptides = base_cycle_sorted_peptides[0 : (top_n_peptides)]
+    base_cycle_top_sorted_peptides = base_cycle_sorted_peptides[0 : (n_top_peptides)]
     
     dna_clones_by_cycle_by_peptide = dna_clones_occurrences_by_cycle_by_peptide(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
-        stop_sequence
+        stop_sequence,
+        quality_score,
         )
     
     dna_mutants_analysis_file.write("peptide sequence,")
@@ -791,28 +798,35 @@ def dna_mutants_analysis(
         dna_mutants_analysis_file.write("\n")
     dna_mutants_analysis_file.close()
     
-#-------------------------------------------------------------------------------        
+# =============================================================================        
 
-    # Create a figure of size 8x6 inches, 500 dots per inch
-    plt.figure(figsize = (8, 6),
-               dpi = 500)
-    # Create 'ggplot' style
+    # # Create a figure of size 8x6 inches, 500 dots per inch
+    # plt.figure(figsize = (8, 6),
+    #            dpi = 500)
+    # # Create 'ggplot' style
+    # plt.style.use('fivethirtyeight')
+    # # Create a new subplot from a grid of 1x1
+    # Graph = plt.subplot(1, 1, 1)
+    # Use 'ggplot' style
     plt.style.use('fivethirtyeight')
-    # Create a new subplot from a grid of 1x1
-    Graph = plt.subplot(1, 1, 1)
+    # Create a figure 8 x 6 inches, 300 dots per inch.
+    fig, ax = plt.subplots(
+        1, 1,
+        figsize = (8, 6),
+        dpi = 300)
     
 #    peptide_dna_clones_number_in_base_cycle = []
 #    peptide_occurrence_in_base_cycle = []
 
-    # Map colours onto lines
+    # Map colors onto lines
     c_norm  = matplotlib.colors.Normalize(
         vmin = 0,
         vmax = len(base_cycle_sorted_peptides) - 1)
-    scalarMap = matplotlib.cm.ScalarMappable(
+    scalar_map = matplotlib.cm.ScalarMappable(
         norm = c_norm,
         cmap = 'gist_rainbow')
 
-    cycle_index = base_selection_cycle_number
+    cycle_index = base_cycle
 
     Xs = []
     Ys = []        
@@ -822,7 +836,7 @@ def dna_mutants_analysis(
         peptide_occurrence_in_base_cycle = math.log(
             peptides_by_cycle[cycle_index].get(peptide, 0), 2)
         
-        peptideColour = scalarMap.to_rgba(
+        peptide_color = scalar_map.to_rgba(
             base_cycle_sorted_peptides.index(peptide))
     
         x = peptide_dna_clones_number_in_base_cycle
@@ -832,22 +846,26 @@ def dna_mutants_analysis(
         
         plt.plot(x, y,
                 'o',
-                c = peptideColour,
+                c = peptide_color,
                 ms = 5.0,
                 mew = 0.1,
                 mec = '#191919')
 
-    XMin = min(Xs) - 0.05*(max(Xs) - min(Xs))
-    XMax = max(Xs) + 0.05*(max(Xs) - min(Xs))
-    YMin = min(Ys) - 0.05*(max(Ys) - min(Ys))
-    YMax = max(Ys) + 0.05*(max(Ys) - min(Ys))
+    x_min = min(Xs) - 0.05*(max(Xs) - min(Xs))
+    x_max = max(Xs) + 0.05*(max(Xs) - min(Xs))
+    y_min = min(Ys) - 0.05*(max(Ys) - min(Ys))
+    y_max = max(Ys) + 0.05*(max(Ys) - min(Ys))
     
-    plt.axis([XMin, XMax, YMin, YMax])
+    ax.axis([x_min, x_max, y_min, y_max])
         
-    XLabel = 'log$2$ (dna Clones #)' #$_$ makes subscript possible
-    plt.xlabel(XLabel, fontsize = 14)
-    YLabel = 'log$2$ (peptide occurrence)'
-    plt.ylabel(YLabel, fontsize = 14)
+    # x_label = 
+    ax.set_xlabel(
+        'log$2$ (# dna clones)',  # $_$ makes subscript possible
+        fontsize = 14)
+    # YLabel = 
+    ax.set_ylabel(
+        'log$2$ (peptide occurrence)',  # $_$ makes subscript possible
+        fontsize = 14)
     
     legend = plt.legend(base_cycle_sorted_peptides,
                         loc = 'upper center',
@@ -857,9 +875,9 @@ def dna_mutants_analysis(
                         ncol = 4)
     
     dna_clones_analysis_png_path = (
-        f"{today}dnas_mutants_analysis_regression_C{cycle}_{file_name}.png")
+        f"{today}_dnas_mutants_analysis_regression_C{cycle}_{file_name}.png")
     
-    plt.savefig(
+    fig.savefig(
         dna_clones_analysis_png_path,
         bbox_extra_artists=[legend],
         bbox_inches='tight',
@@ -867,112 +885,120 @@ def dna_mutants_analysis(
     plt.show()
     plt.close()
 
-
+# =============================================================================
 def peptides_relatedness_analysis(
         data_directory_path,
-        base_selection_cycle_number,
-        top_n_peptides,
-        start_sequence,
-        stop_sequence,
-        cdna_min_length,
-        cdna_max_length,
-        quality_score,
-        file_name
+        base_cycle,
+        n_top_peptides,
+        file_name,
+        cdna_min_length: int = gp.CDNA_MIN_LENGTH,
+        cdna_max_length: int = gp.CDNA_MAX_LENGTH,
+        start_sequence: str = gp.START_SEQUENCE,
+        stop_sequence: str = gp.STOP_SEQUENCE,
+        quality_score: int = gp.QUALITY_SCORE,
         ):
     
-    # to extract todays_date
-    today = todays_date()
+    # Get todays date/
+    today = get_todays_date()
     
-    # to collect dnas-based summary information By_cycle
-    dnas_by_cycle = dnas_occurrences_by_cycle(
-        data_directory_path,
-        cdna_min_length,
-        cdna_max_length,
-        quality_score,
-        start_sequence,
-        stop_sequence,
-        )
-    total_dnas_by_cycle = total_reads_by_cycle(
-        data_directory_path,
-        cdna_min_length,
-        cdna_max_length,
-        quality_score,
-        start_sequence,
-        stop_sequence,
-        )
+    # Get DNAs-based summary by cycle
+    # dnas_by_cycle = dnas_occurrences_by_cycle(
+    #     data_directory_path,
+    #     cdna_min_length,
+    #     cdna_max_length,
+    #     start_sequence,
+    #     stop_sequence,
+    #     quality_score,
+    #     )
+    # total_dnas_by_cycle = get_total_reads_per_cycle(
+    #     data_directory_path,
+    #     cdna_min_length,
+    #     cdna_max_length,
+    #     start_sequence,
+    #     stop_sequence,
+    #     quality_score,
+    #     )
     base_cycle_sorted_dnas = base_cycle_sorted_dnas_list(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
-    dnas_appearances = dnas_appearances_by_cycle(
-        base_cycle_sorted_dnas,
-        dnas_by_cycle)
+    # dnas_appearances = dnas_appearances_by_cycle(
+    #     base_cycle_sorted_dnas,
+    #     dnas_by_cycle)
     
-    # to collect peptides-based summary information By_cycle
+    # Get peptides-based summary by cycle
     peptides_by_cycle = peptides_occurrences_by_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
-    total_peptides_by_cycle = total_reads_by_cycle(
+    total_peptides_by_cycle = get_total_reads_per_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
     base_cycle_sorted_peptides = base_cycle_sorted_peptides_list(
         data_directory_path,
-        base_selection_cycle_number,
+        base_cycle,
         cdna_min_length,
         cdna_max_length,
-        quality_score,
         start_sequence,
         stop_sequence,
+        quality_score,
         )
+
     peptides_appearances = peptides_appearances_by_cycle(
         base_cycle_sorted_peptides,
         peptides_by_cycle)
     
-    selection_summary = complete_selection_summary(
+    selection_summary = get_complete_selection_summary(
         data_directory_path,
-        start_sequence,
-        stop_sequence,
         cdna_min_length,
         cdna_max_length,
+        start_sequence,
+        stop_sequence,
         quality_score)
+
     sorted_cycles_list = sorted(selection_summary.keys())
     
-    # to create a disjoint graph (forest),
-    # based on dnas in the base_cycle
-    # (joint subgraphs are the trees and the unique dna sequences are the leaves)
+    # Get a disjoint graph (forest),
+    # based on DNAs in the base cycle
+    # (joint subgraphs are the trees and the unique DNA-sequences are the leaves)
     base_cycle_dnas_forest = nx.Graph()
     # to add nodes (leaves, unique dna sequences)
     # to the base_cycle_dnas_forest disjoint graph
     base_cycle_dnas_forest.add_nodes_from(base_cycle_sorted_dnas)
-    # to add edges
-    # (twigs, dna-to-dna connections based on the hamming
-    # distance between unique dna sequences) to the base_cycle_dnas_forest
+    # Add edges between DNA sequences
+    # (if hamming distance between two DNA sequences = 1)
+    # to the base_cycle_dnas_forest
     # so that disjoint graphs (stand alone trees) can be identified
     used_nodes = []
     for dna1 in base_cycle_sorted_dnas:
         used_nodes += [dna1]
         for dna2 in base_cycle_sorted_dnas:
-            if dna2 not in used_nodes and hamming_distance(dna1, dna2) == 1:
-                base_cycle_dnas_forest.add_edge(dna1,dna2,
-                                                mutations_number = 1)
-    # to extract individual joint subgraphs (stand alone trees) from the disjoint graph (forest)
+            if ((dna2 not in used_nodes)
+                and (hamming_distance(dna1, dna2) == 1)):
+                base_cycle_dnas_forest.add_edge(
+                    dna1,
+                    dna2,
+                    n_mutations = 1)
+    # Get individual joint subgraphs (stand alone trees)
+    # from the disjoint graph (forest).
     base_cycle_dnas_trees = list(
-        nx.connected_component_subgraphs(base_cycle_dnas_forest, copy = True))
+        nx.connected_component_subgraphs(
+            base_cycle_dnas_forest,
+            copy=True))
     
     # to create a peptideSummarydnaPerspectiveCSV file
     peptides_summary_csv = f"{today}_peptide_families_summary_{file_name}.csv"
@@ -988,44 +1014,53 @@ def peptides_relatedness_analysis(
                 peptide_leaves += [peptide]
         peptides_trees_leaves += [peptide_leaves]
     # to sort the resulting list of lists from the largest to smallest
-    peptides_trees_leaves.sort(key = len, reverse = True)
+    peptides_trees_leaves.sort(
+        key=len,
+        reverse=True)
     
-    # to fix the coordinates of the origin of the graph
+    # Fix the coordinates of the origin of the graph.
     positions = {}
-    X_0_Coordinate = 1
-    Y_0_Coordinate = 0
-    Y_X0_Coordinate = 0
+    x_0_coordinate = 1
+    y_0_coordinate = 0
+    y_x_0_coordinate = 0
     
-    treesXCoordinates = []
+    trees_x_coordinates = []
     
-    peptideGraphFigure = plt.figure()
-    peptideGraph = peptideGraphFigure.add_subplot(1, 1, 1)
+    # Introduce peptideFamilyCounter
+    many_peptides_families_counter = 0
+    # Introduce one_peptide_families_counter
+    one_peptide_families_counter = 0
+    # Introduce peptideFamilysize
+    peptide_tree_size = []
     
-    #to introduce peptideFamilyCounter
-    MultiplepeptideFamilyCounter = 0
-    #to introduce SinglepeptideFamilyCounter
-    SinglepeptideFamilyCounter = 0
-    #to introduce peptideFamilySize
-    peptide_treeSize = []
-    
-    
-    # to create a tree for each set of peptides trees leaves 
+    # PLOT SETUP START ========================================================
+    # Set color map.
+    n_colors = len(sorted_cycles_list)
+    color_map = plt.get_cmap('Paired', n_colors)
+    # Set figure and axes.
+    fig, ax = plt.subplots(
+        1, 1,
+        # figsize = (8, 6),
+        dpi = 300)
+    # PLOT SETUP END ==========================================================
+
+    # Get a tree for each set of peptides trees leaves.
     for peptide_leaves in peptides_trees_leaves:
-        
         peptide_tree = nx.Graph()
         # to convert each peptide (Leave) into a node of a peptide graph (peptideLeave on a peptide_tree)
         
         for peptide in peptide_leaves:
-            peptide_tree.add_node(peptide,
-                                        occurrence = peptides_by_cycle[base_selection_cycle_number][peptide],
-                                        first_appearance = min(peptides_appearances[peptide]))
-        # to join the peptide nodes of a graph by edges (twigs)
+            peptide_tree.add_node(
+                peptide,
+                occurrence = peptides_by_cycle[base_cycle][peptide],
+                first_appearance = min(peptides_appearances[peptide]))
+        # Join peptide nodes by edges, if hamming distance = 1
         for peptide1 in peptide_leaves:
             for peptide2 in peptide_leaves:
                 if hamming_distance(peptide1, peptide2) == 1:
                     peptide_tree.add_edge(peptide1,peptide2)
         
-        # to identify the root_peptide of a peptide_tree graph
+        # Get root-peptide of a peptide-tree.
         tree_peptides_occurrences = nx.get_node_attributes(
             peptide_tree,
             'occurrence')              
@@ -1033,7 +1068,8 @@ def peptides_relatedness_analysis(
             tree_peptides_occurrences,
             key=tree_peptides_occurrences.get)
         
-        # to create a dictionary holder for peptide and their properties (Predecessor and Occurrence)
+        # Make a dictionary holder for peptides and their properties
+        # (predecessor and occurrence)
         tree_peptides = {}
         tree_peptides[root_peptide] = [
             0,
@@ -1051,7 +1087,8 @@ def peptides_relatedness_analysis(
                 source=peptide,
                 target=root_peptide,
                 weight=None)[1]
-            # predecessor_occurrence can be used to sort the peptides, but does not seem to be useful
+            # Predecessor occurrence can be used to sort the peptides.
+            # However, it does not seem to be useful.
             predecessor_occurrence = peptide_tree.node[peptide_predecessor]['occurrence']
             peptide_occurrence = peptide_tree.node[peptide]['occurrence']
 
@@ -1060,8 +1097,7 @@ def peptides_relatedness_analysis(
                 predecessor_occurrence,
                 peptide_occurrence]
             
-        
-        # to sort peptides in a peptide_tree by their distance to the root_peptide
+        # Sort peptides in a peptide_tree by their distance to the root_peptide.
         peptides_by_distance_to_the_root = {}
         for peptide in peptide_tree.nodes():
             distance_to_the_root = nx.shortest_path_length(
@@ -1074,14 +1110,14 @@ def peptides_relatedness_analysis(
             else:
                 peptides_by_distance_to_the_root[distance_to_the_root] += [peptide]
         
-        # to identify the largest group of equidistanced peptides 
-        max_peptides_number = max(
+        # Find the largest group of equidistanced peptides.
+        n_peptides_max = max(
             map(lambda k:
             len(peptides_by_distance_to_the_root[k]),
             peptides_by_distance_to_the_root))
 
         sorted_peptides_by_distance_to_the_root = {}
-        # to sort peptides by their distance to the root_peptide
+        # Sort peptides by their distance to the root_peptide.
         for distance_to_the_root in peptides_by_distance_to_the_root:
 
             equidistant_peptides = peptides_by_distance_to_the_root[
@@ -1091,63 +1127,64 @@ def peptides_relatedness_analysis(
                 equidistant_peptides,
                 key=lambda peptide: (tree_peptides[peptide][2]),
                 reverse=True)
-            # predecessor_occurrence can be used to sort the peptides, but does not seem to be useful
-            # equidistant_peptides = sorted(equidistant_peptides, key = lambda peptide: (tree_peptides[peptide][1]), reverse = True)
+            # Predecessor occurrence can be used to sort the peptides.
+            # However, it does not seem to be useful.
+            # equidistant_peptides = sorted(
+            #     equidistant_peptides,
+            #     key = lambda peptide: (tree_peptides[peptide][1]),
+            #     reverse = True)
             equidistant_peptides = sorted(
                 equidistant_peptides,
                 key=lambda peptide: (tree_peptides[peptide][0]),
                 reverse=False)
 
-            additional_elements = max_peptides_number - len(equidistant_peptides)
+            additional_elements = n_peptides_max - len(equidistant_peptides)
             sorted_peptides_by_distance_to_the_root[
                 distance_to_the_root] = (
                     equidistant_peptides + additional_elements * [''])
 
             if len(peptide_tree.nodes()) > 1:
                 for peptide in equidistant_peptides:
-                    XCoordinate = X_0_Coordinate + distance_to_the_root
-                    YCoordinate = Y_0_Coordinate - equidistant_peptides.index(peptide)
+                    XCoordinate = x_0_coordinate + distance_to_the_root
+                    YCoordinate = y_0_coordinate - equidistant_peptides.index(peptide)
                     positions[peptide] = (XCoordinate, YCoordinate)
                     
                                     
             elif len(peptide_tree.nodes()) == 1:
                 for peptide in equidistant_peptides:
                     XCoordinate = 0
-                    YCoordinate = Y_X0_Coordinate
+                    YCoordinate = y_x_0_coordinate
                     positions[peptide] = (XCoordinate, YCoordinate)
                     
-
-        #BasecyclepeptidesGraph = nx.Graph()    
-        #BasecyclepeptidesGraph.add_nodes_from(base_cycle_sorted_peptides)
-
+        # Get marker size, proportional to peptides occurence in a base cycle.
         sizes = []
         for peptide in peptide_tree.nodes():
-            sizes.append(math.log(peptides_by_cycle[base_selection_cycle_number][peptide], 2) + 5)
-
-        colours = []
+            sizes.append(
+                math.log(peptides_by_cycle[base_cycle][peptide], 2) + 5)
+        # Get marker color based on the peptides first appearance.
+        colors = []
         for peptide in peptide_tree.nodes():
-            colours.append(min(peptides_appearances[peptide]))
+            colors.append(min(peptides_appearances[peptide]))
         
-        XSpan = max(map(lambda peptide: positions[peptide][0], positions)) - min(map(lambda peptide: positions[peptide][0], positions))
-        YSpan = max(map(lambda peptide: positions[peptide][1], positions)) - min(map(lambda peptide: positions[peptide][1], positions))
+        x_span = (
+            max(map(lambda peptide: positions[peptide][0], positions))
+            - min(map(lambda peptide: positions[peptide][0], positions)))
+        y_span = (
+            max(map(lambda peptide: positions[peptide][1], positions))
+            - min(map(lambda peptide: positions[peptide][1], positions)))
                             
-        XMin = min(map(lambda peptide: positions[peptide][0], positions)) - 0.01 * XSpan
-        XMax = max(map(lambda peptide: positions[peptide][0], positions)) + 0.01 * XSpan
-        YMin = min(map(lambda peptide: positions[peptide][1], positions)) - 0.02 * YSpan
-        YMax = max(map(lambda peptide: positions[peptide][1], positions)) + 0.02 * YSpan
+        x_min = min(map(lambda peptide: positions[peptide][0], positions)) - 0.01 * x_span
+        x_max = max(map(lambda peptide: positions[peptide][0], positions)) + 0.01 * x_span
+        y_min = min(map(lambda peptide: positions[peptide][1], positions)) - 0.02 * y_span
+        y_max = max(map(lambda peptide: positions[peptide][1], positions)) + 0.02 * y_span
         
-        
-        
-        number_of_colours = len(sorted_cycles_list)
-        
-        colour_map = plt.get_cmap('Paired', number_of_colours)
-        
+        # Plot peptide tree.
         nx.draw_networkx(
             peptide_tree,
             pos = positions,
             node_size = sizes,
-            node_color = colours,
-            cmap = colour_map,
+            node_color = colors,
+            cmap = color_map,
             linewidths = 0.2,
             width = 0.2,
             with_labels = False,
@@ -1161,164 +1198,181 @@ def peptides_relatedness_analysis(
                     f"{distance_to_the_root} mutations,frequency,rank,")
             peptides_summary_file.write("\n")
 
-        for i in range(max_peptides_number):
-            for mutations_number in sorted_peptides_by_distance_to_the_root:                        
-                peptide = sorted_peptides_by_distance_to_the_root[mutations_number][i]
+        for i in range(n_peptides_max):
+            for n_mutations in sorted_peptides_by_distance_to_the_root:                        
+                peptide = sorted_peptides_by_distance_to_the_root[n_mutations][i]
 
                 if peptide != '':
-                    formated_peptide = hamming_distance_based_formating(root_peptide, peptide)
+                    formated_peptide = hamming_distance_based_formating(
+                        root_peptide,
+                        peptide)
                     peptide_rank = str(base_cycle_sorted_peptides.index(peptide) + 1)
-                    #ClonesNumber = str(len(peptide_tree.neighbors(peptide)))
-                    peptide_fraction = float(
-                        (peptides_by_cycle[base_selection_cycle_number].get(peptide, 0)))/float(
-                            total_peptides_by_cycle[base_selection_cycle_number])
+                    #n_clones = str(len(peptide_tree.neighbors(peptide)))
+                    peptide_fraction = (float(
+                        (peptides_by_cycle[base_cycle].get(peptide, 0)))
+                        / float(
+                            total_peptides_by_cycle[base_cycle]))
                 else:
                     formated_peptide = ''
-                    #ClonesNumber = ''
+                    #n_clones = 0
                     peptide_rank = ''
-                    peptide_fraction = ''
+                    peptide_fraction = 0.
 
                 peptides_summary_file.write(
-                    f"{formated_peptide},{peptide_fraction:.2%},{peptide_rank},")
+                    f"{formated_peptide},{peptide_fraction:.1%},{peptide_rank},")
             peptides_summary_file.write("\n")
         
         
         if len(peptide_tree.nodes()) > 1:
-            treesXCoordinates += [X_0_Coordinate]
-            X_0_Coordinate += max(peptides_by_distance_to_the_root.keys()) + 1
-            MultiplepeptideFamilyCounter += 1
-            peptide_treeSize += [len(peptide_tree.nodes())]
+            trees_x_coordinates += [x_0_coordinate]
+            x_0_coordinate += max(peptides_by_distance_to_the_root.keys()) + 1
+            many_peptides_families_counter += 1
+            peptide_tree_size += [len(peptide_tree.nodes())]
             
-            
-
         if len(peptide_tree.nodes()) == 1:
-            Y_X0_Coordinate -= 1
-            SinglepeptideFamilyCounter += 1
+            y_x_0_coordinate -= 1
+            one_peptide_families_counter += 1
 
-        peptides_summary_file.write('\n')
+        peptides_summary_file.write("\n")
                     
     peptides_summary_file.close()
-    
-    #plt.axis('off')
-    plt.axis([XMin, XMax, YMin, YMax])
 
-    peptideLegendColour = peptideGraphFigure.add_subplot(1, 1, 1)
-        
-    colour_map = plt.get_cmap('Paired', number_of_colours)
-    peptideLegendcolours = sorted_cycles_list
-    
-    LegendDotsX = XMax - 0.3 * XMax
-    YIncrement = - 0.03 * YMin
-    #print (YIncrement)
-    
-    LegendColourDotsX = np.array([LegendDotsX] * number_of_colours)
-    #print (LegendColourDotsX)
-    FirstYcolours = YMin + 12 * YIncrement
-    #print (FirstYcolours)
-    LastYcolours = YMin + (12 + number_of_colours) * YIncrement
-    #print (LastYcolours)
-    LegendColourDotsY = np.linspace(FirstYcolours, LastYcolours, number_of_colours, endpoint = False)
-    #print (LegendColourDotsY)
-    
-    peptideLegendColour.scatter(x = LegendColourDotsX,
-                                y = LegendColourDotsY,
-                                s = 15,
-                                c = peptideLegendcolours,
-                                cmap = colour_map,
-                                linewidths = 0.2)
-    
-    ColourLabels = sorted_cycles_list
-#     this way of setting the colours seems to be redundant
-#     ColourLabels = ['{0}'.format(i) for i in range(number_of_colours)]
 
-    for label, x, y in zip(ColourLabels, LegendColourDotsX, LegendColourDotsY):
-        plt.annotate(label, xy = (x, y), xytext = (5, 0),
-                     textcoords = 'offset points',
-                     fontsize = 5,
-                     ha = 'left', va = 'center')
-    plt.text(x = LegendDotsX, y = (max(LegendColourDotsY) + YIncrement),
-             s = 'first-appearance cycle #',
-             fontsize = 5)
-    #plt.axis('off')
+# =============================================================================
+    ax.axis([x_min, x_max, y_min, y_max])
+    
+    legend_dots_x = x_max - 0.3 * x_max
+    y_increment = - 0.03 * y_min
+    #print (y_increment)
+    
+    legend_color_dots_X = np.array([legend_dots_x] * n_colors)
+    #print (legend_color_dots_X)
+    first_y_colors = y_min + 12 * y_increment
+    #print (first_y_colors)
+    last_y_colors = y_min + (12 + n_colors) * y_increment
+    #print (last_y_colors)
+    legend_color_dots_Y = np.linspace(
+        first_y_colors,
+        last_y_colors,
+        n_colors,
+        endpoint=False)
+    #print (legend_color_dots_Y)
+    peptide_legend_colors = sorted_cycles_list
+    
+    ax.scatter(
+        x = legend_color_dots_X,
+        y = legend_color_dots_Y,
+        s = 15,
+        c = peptide_legend_colors,
+        cmap = color_map,
+        linewidths = 0.2)
+    
+    color_labels = sorted_cycles_list
+#     this way of setting the colors seems to be redundant
+#     color_labels = ['{0}'.format(i) for i in range(n_colors)]
 
-    peptideLegendSize = peptideGraphFigure.add_subplot(1, 1, 1)
+    for label, x, y in zip(color_labels, legend_color_dots_X, legend_color_dots_Y):
+        ax.annotate(
+            label,
+            xy = (x, y),
+            xytext = (5, 0),
+            textcoords = 'offset points',
+            fontsize = 5,
+            ha = 'left', va = 'center')
+    ax.text(
+        x = legend_dots_x,
+        y = (max(legend_color_dots_Y) + y_increment),
+        s = 'first-appearance cycle #',
+        fontsize = 5)
 
-    Size = []
+    size = []
     for i in [1, 10, 100, 1000, 10000]:
-        Size.append(math.log(i, 2) + 5)
+        size.append(math.log(i, 2) + 5)
 
-    LegendSizeDotsX = np.array([LegendDotsX] * 5)
-    FirstYsizes = YMin + 5 * YIncrement
-    LastYSizez = YMin + 10 * YIncrement
-    LegendSizeDotsY = np.linspace(FirstYsizes, LastYSizez, 5, endpoint = False)
-    peptideLegendSize.scatter(x = LegendSizeDotsX,
-                              y = LegendSizeDotsY,
-                              s = Size,
-                              c = 'w',
-                              linewidths = 0.2)
+    legend_size_dots_x = np.array([legend_dots_x] * 5)
+    first_y_sizes = y_min + 5 * y_increment
+    last_y_sizes = y_min + 10 * y_increment
+    legend_size_dots_y = np.linspace(
+        first_y_sizes,
+        last_y_sizes,
+        5,
+        endpoint = False)
+    ax.scatter(
+        x = legend_size_dots_x,
+        y = legend_size_dots_y,
+        s = size,
+        c = 'w',
+        linewidths = 0.2)
 
-    SizeLabels = ['{0}'.format(i) for i in [1, 10, 100, 1000, 10000]]
+    size_labels = [f"{i}" for i in [1, 10, 100, 1000, 10000]]
 
-    for label, x, y in zip(SizeLabels, LegendSizeDotsX, LegendSizeDotsY):
-        plt.annotate(label, xy = (x, y), xytext = (5, 0),
-                     textcoords = 'offset points',
-                     fontsize = 5,
-                     ha = 'left', va = 'center')
-    plt.text(x = LegendDotsX, y = (max(LegendSizeDotsY) - 0.03 * YMin),
-             s = 'frequency in the last cycle',
-             fontsize = 5)
+    for label, x, y in zip(size_labels, legend_size_dots_x, legend_size_dots_y):
+        ax.annotate(
+            label,
+            xy = (x, y),
+            xytext = (5, 0),
+            textcoords = 'offset points',
+            fontsize = 5,
+            ha = 'left',
+            va = 'center')
+    ax.text(
+        x = legend_dots_x,
+        y = (max(legend_size_dots_y) - 0.03 * y_min),
+        s = "frequency in the last cycle",
+        fontsize = 5)
     
     
     
-    #FamilySizeLabels = ['{0}'.format(i) for i in peptide_treeSize]
+    #Familysize_labels = ['{0}'.format(i) for i in peptide_tree_size]
 
-    #for label, x, y in zip(FamilySizeLabels, LegendSizeDotsX, LegendSizeDotsY):
+    #for label, x, y in zip(Familysize_labels, legend_size_dots_x, legend_size_dots_y):
     #    plt.annotate(label, xy = (x, y), xytext = (5, 0),
     #                 textcoords = 'offset points',
     #                 fontsize = 5,
     #                 ha = 'left', va = 'center')
-    for i in range(len(peptide_treeSize)):
-        plt.text(x = treesXCoordinates[i], y = YIncrement,
-                 s = peptide_treeSize[i],
+    for i in range(len(peptide_tree_size)):
+        ax.text(x = trees_x_coordinates[i], y = y_increment,
+                 s = peptide_tree_size[i],
                  fontsize = 5)
     
+    ax.text(
+        x=legend_dots_x,
+        y=y_min + 3 * y_increment,
+        s = f"total # unique peptide sequence {len(base_cycle_sorted_peptides)}",
+        fontsize = 5)
+    ax.text(
+        x = legend_dots_x,
+        y = y_min + 2 * y_increment,
+        s = f"single-member peptide family # {one_peptide_families_counter}",
+        fontsize = 5)
+    ax.text(
+        x = legend_dots_x,
+        y = y_min + 1 * y_increment,
+        s = f"multiple-member peptide family # {many_peptides_families_counter}",
+        fontsize = 5)
     
-    
-    
-    
-    plt.text(x = LegendDotsX, y = YMin + 3 * YIncrement,
-             s = ('total # unique peptide sequence ' + str(len(base_cycle_sorted_peptides))),
-             fontsize = 5)
-    plt.text(x = LegendDotsX, y = YMin + 2 * YIncrement,
-             s = 'single-member peptide family # ' + str(SinglepeptideFamilyCounter),
-             fontsize = 5)
-    plt.text(x = LegendDotsX, y = YMin + 1 * YIncrement,
-             s = 'multiple-member peptide family # ' + str(MultiplepeptideFamilyCounter),
-             fontsize = 5)
-    
-    plt.axis('off')
+    ax.axis('off')
 
-    peptidesSummaryfile_namePNG = str(today) + 'peptideFamiliesSummary' + file_name + '.png'
-    plt.savefig(peptidesSummaryfile_namePNG, dpi = 500)
+    peptides_summary_png = f"{today}_peptide_families_summary_{file_name}.png"
+    fig.savefig(peptides_summary_png, dpi = 500)
     
     
-    fig = plt.gcf()
-    SizeInches = fig.get_size_inches()*fig.dpi
-    SizeDots = fig.get_size_inches()
+    # fig = plt.gcf()
+    # size_inches = fig.get_size_inches()*fig.dpi
+    # size_dots = fig.get_size_inches()
     
-    #print (SizeInches)
-    #print (SizeDots)
+    #print (size_inches)
+    #print (size_dots)
     
+    #print (x_min)
+    #print (x_max)
+    #print (y_min)
+    #print (y_max)
     
-    #print (XMin)
-    #print (XMax)
-    #print (YMin)
-    #print (YMax)
-    
-    #print (peptide_treeSize)
-    #print (len(peptide_treeSize))
-    #print (treesXCoordinates)
-    #print (len(treesXCoordinates))
+    #print (peptide_tree_size)
+    #print (len(peptide_tree_size))
+    #print (trees_x_coordinates)
+    #print (len(trees_x_coordinates))
     
     plt.show()
     plt.close()

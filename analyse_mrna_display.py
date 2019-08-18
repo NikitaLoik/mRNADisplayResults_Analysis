@@ -746,69 +746,98 @@ if __name__ == "__main__":
         description="""
         This script combines the .fastq of mRNA display cycles;
         it produces a summary report, analyses peptide relatedness,
-        and analyses DNA mutants
+        and DNA mutants.
         """
-    )
+        )
     parser.add_argument(
-        "--blocked_segments",
-        required=False,
-        default=False,
-        action='store_true',
-        help="""To remove blocked segments from the graph,
-        supply '[CITY]/route/blocked_segments.txt'."""
-    )
-    parser.add_argument(
-        "--city",
+        "--data_path",
         required=True,
         type=str,
-        help="Provide city name (spelling as in pa_globals.py)",
-    )
+        # action='store_true',
+        help="""Provide path to directory containing .fastq files by round.
+        Files have to end in two digits denoting selection cycle number."""
+        )
     parser.add_argument(
-        "--redrive_segments",
-        required=False,
-        default=False,
-        action='store_true',
-        help="""If chosen, 'static_completion_[CITY].geojson' is used.
-        Otherwise, one-way segments are used."""
-    )
-    parser.add_argument(
-        "--camera_side",
+        "--base_cycle",
         required=True,
-        choices=['R', 'L'],
-        help="Please indicate camera side for the route 'L' or 'R'."
-    )
-    parser.add_argument(
-        "--selected_segments",
-        required=False,
-        default=False,
-        action='store_true',
-        help="""If chosen, '[CITY]/route/selected_segments.txt' is used.
-        Otherwise, one-way segments are used."""
-    )
-    parser.add_argument(
-        "--task",
-        required=False,
-        type=str,
-        default='bosch',
-        help="""(hint for humans) Defines the polygon to use. Default is 'bosch'."""
-    )
-    parser.add_argument(
-        "--coverage",
-        required=False,
         type=int,
-        default=99,
-        help="""route coverage minimum percentage (example: 99)"""
-    )
+        help="""Indicate selection base cycle number.
+        This cycle will be used as a reference point for comparison."""
+        )
     parser.add_argument(
-        "--driving_side",
+        "--n_top_peptides",
+        required=True,
+        type=int,
+        help="""Indicate the number of top peptides
+        (most abundant peptides in base cycle) to include into graphs."""
+        )
+    parser.add_argument(
+        "--file_name",
         required=True,
         type=str,
-        choices=['right', 'left'],
-        help="""Lane where traffic goes forward. For example England is 'left'.
-        When 'left' is used, penalties for right-turn and left-turn are swapped."""
-    )
+        # action='store_true',
+        help="""Indicate selection name.
+        This name is included in all generated files names."""
+        )
+    parser.add_argument(
+        "--cdna_min_length",
+        required=False,
+        default=gp.CDNA_MIN_LENGTH,
+        type=int,
+        help="""Indicate minimum expected cDNA length."""
+        )
+    parser.add_argument(
+        "--cdna_max_length",
+        required=False,
+        default=gp.CDNA_MAX_LENGTH,
+        type=int,
+        help="""Indicate maximum expected cDNA length."""
+        )
+    parser.add_argument(
+        "--start_sequence",
+        required=False,
+        default=gp.START_SEQUENCE,
+        type=str,
+        help="""Indicate start sequence."""
+        )
+    parser.add_argument(
+        "--stop_sequence",
+        required=False,
+        default=gp.STOP_SEQUENCE,
+        type=str,
+        help="""Indicate stop sequence."""
+        )
+    parser.add_argument(
+        "--quality_score",
+        required=False,
+        default=gp.QUALITY_SCORE,
+        type=int,
+        help="""Indicate threshold quality score."""
+        )
 
     parsed_args = vars(parser.parse_args())
+    data_path = parsed_args['data_path']
+    base_cycle = parsed_args['base_cycle']
+    n_top_peptides = parsed_args['n_top_peptides']
+    file_name = parsed_args['file_name']
+    cdna_min_length = parsed_args['cdna_min_length']
+    cdna_max_length = parsed_args['cdna_max_length']
+    start_sequence = parsed_args['start_sequence']
+    stop_sequence = parsed_args['stop_sequence']
+    quality_score = parsed_args['quality_score']
 
-
+    new_selection = Selection(
+        data_path,
+        base_cycle,
+        n_top_peptides,
+        file_name,
+        cdna_min_length,
+        cdna_max_length,
+        start_sequence,
+        stop_sequence,
+        quality_score,
+        )
     
+    new_selection.get_summary()
+    new_selection.get_dna_mutants_summary()
+    new_selection.get_peptides_relatedness_summary()

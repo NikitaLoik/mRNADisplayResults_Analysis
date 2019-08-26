@@ -229,7 +229,7 @@ class Selection:
         ax.axis([x_min, x_max, y_min, y_max])
         
         ax.tick_params(labelsize = 10)
-        ax.tick_params(labelsize = 10)
+        # ax.tick_params(labelsize = 10)
         
         ax.set_xlabel(
             "Selection Cycle #",

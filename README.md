@@ -1,2 +1,4 @@
-# mRNADisplayResults_Analysis
-Provides a way to extract, analyse and visualise the mRNA Display Results based on the next generation sequencing (NGS) .fastq files.
+# mRNA Display Results Analysis
+Provides a way to extract, analyse and visualise the mRNA-display results based on the next generation sequencing (NGS) .fastq files.
+
+**sample_input** — data is from the original mRNA-display against the target protein — biotin-tagged human recombinant PHD2 — was performed according to the previously published protocol with minor modifications. PHD2 was immobilised on M-280 streptavidin magnetic beads. Prior to selection the activity of immobilised PHD2 was confirmed using CODD peptide as a substrate. Original cDNA library was assembled from five libraries combined at equimolar ratios with random region varying from (NNK)8 to (NNK)12 (cDNA total length varying from 111 to 123 nucleotides, respectively). Original library diversity was estimated 10<sup>12</sup>-10<sup>14</sup> unique cDNA sequences, each present at 1 to 100 copies.

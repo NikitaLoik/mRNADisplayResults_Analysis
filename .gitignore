@@ -1,5 +1,5 @@
-.vscode/*
-.ipynb_checkpoints/*
-__pycache__/*
+.vscode/
+.ipynb_checkpoints/
+__pycache__/
 .DS_Store
 .venv_mrna_display/

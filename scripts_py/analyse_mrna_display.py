@@ -1,4 +1,4 @@
-import os
+import os, sys, inspect
 import datetime
 
 import argparse
@@ -12,8 +12,13 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 rcParams['font.family'] = 'monospace'
 
-import global_parameters as gp
-import utility_functions as uf
+working_dir = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(working_dir)
+sys.path.insert(0, parent_dir)
+
+from scripts_py import global_parameters as gp
+from scripts_py import utility_functions as uf
 
 # SET LOGGER ==================================================================
 import logging

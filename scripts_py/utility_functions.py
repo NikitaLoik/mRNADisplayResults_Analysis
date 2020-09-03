@@ -1,4 +1,4 @@
-import os
+import os, sys, inspect
 import datetime
 
 import math
@@ -10,7 +10,13 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 rcParams['font.family'] = 'monospace'
 
-import global_parameters as gp
+
+working_dir = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(working_dir)
+sys.path.insert(0, parent_dir)
+
+from scripts_py import global_parameters as gp
 
 # =============================================================================
 def get_todays_date():
@@ -18,6 +24,14 @@ def get_todays_date():
     returns todays date in format YYYYMMDD
     '''
     return datetime.date.today().strftime('%Y%m%d')
+
+def get_au_count(dna_sequence):
+    au_count = (
+        dna_sequence.count('A')
+        + dna_sequence.count('U')
+        + dna_sequence.count('T'))
+
+    return au_count
 
 
 def get_coding_sequence(

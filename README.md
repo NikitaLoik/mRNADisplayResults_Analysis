@@ -1,4 +1,11 @@
-# mRNA Display Results Analysis
-Provides a way to analyse and visualise the mRNA-display results based on next-generation-sequencing (NGS) data.
+# mRNA-Display Analysis Tool
+This is a command-line python tool for the analysis and visualisation of mRNA-display based on NGS (next generation sequencing) data.
 
-**sample_input** — data is from the original research. mRNA-display was performed against active biotin-tagged human recombinant PHD2 immobilised on M-280 streptavidin magnetic beads. cDNA library was assembled from five libraries combined at equimolar ratios with random region varying from (NNK)8 to (NNK)12 (cDNA total length varying from 111 to 123 nucleotides, respectively). Original library diversity was estimated 10<sup>12</sup>-10<sup>14</sup> unique cDNA sequences, each present at 1 to 100 copies.
+For details on how to set up and use this tool, please check out this [wiki](https://github.com/nikita-loik/mrna-display/wiki).
+
+The wiki provides a step-by-step explanation on **how the tool works**, how to **set it up**, **use it** and **remove it**.
+
+1. [How the Tool Works](https://github.com/nikita-loik/mrna-display/wiki/How-the-Tool-Works)
+2. [Set Up the Tool](https://github.com/nikita-loik/mrna-display/wiki/Set-Up-the-Tool)
+3. [Use the Tool](https://github.com/nikita-loik/mrna-display/wiki/Use-the-Tool)
+4. [Remove the Tool](https://github.com/nikita-loik/mrna-display/wiki/Remove-the-Tool)

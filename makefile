@@ -13,6 +13,7 @@ KERNEL_NAME_PY = "$(VENV_STEM)_py"
 
 venv_get:
 	scripts_shell/get_venv.sh
+	@echo "===VIRTUAL ENVIRONMENT SET UP==="
 
 venv_remove:
 	@echo "===removing virtual environment==="
@@ -20,3 +21,4 @@ venv_remove:
 
 	@echo "===removing virtual iPython kernel==="
 	rm -rf ~/Library/Jupyter/kernels/$(KERNEL_NAME_PY)
+	@echo "===VIRTUAL ENVIRONMENT AND KERNEL REMOVED==="

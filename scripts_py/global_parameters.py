@@ -95,7 +95,7 @@ def SelectionSummaryReport(
     SelectionSummary = CompleteSelectionSummary(fastqDataFolderLocation)
     SortedRoundsList = sorted(SelectionSummary.keys())
     
-    Peptides_BY_Round = PeptidesOccurences_BY_Round(fastqDataFolderLocation)
+    Peptides_BY_Round = PeptidesOccurrences_BY_Round(fastqDataFolderLocation)
     TotalPeptides_BY_Round = TotalReads_BY_Round(fastqDataFolderLocation)
     
     BaseRoundSortedPeptides = BaseRoundSortedPeptidesList(fastqDataFolderLocation, BaseRoundIndex)

@@ -361,17 +361,17 @@ class Selection:
 
 # =============================================================================
     def get_peptides_relatedness_summary(self):
-        # Get a disjoint graph (forest),
+        # Get a disconnected graph (forest),
         # based on DNAs in the base cycle
-        # (joint subgraphs are the trees and the unique DNA-sequences are the leaves)
+        # (connected subgraphs are the trees and the unique DNA-sequences are the leaves)
         base_cycle_dnas_forest = nx.Graph()
         # to add nodes (leaves, unique dna sequences)
-        # to the base_cycle_dnas_forest disjoint graph
+        # to the base_cycle_dnas_forest disconnected graph
         base_cycle_dnas_forest.add_nodes_from(self.base_cycle_sorted_dnas)
         # Add edges between DNA sequences
         # (if hamming distance between two DNA sequences = 1)
         # to the base_cycle_dnas_forest
-        # so that disjoint graphs (stand alone trees) can be identified
+        # so that disconnected graphs (stand alone trees) can be identified
         used_nodes = []
         for dna1 in self.base_cycle_sorted_dnas:
             used_nodes += [dna1]
@@ -382,12 +382,12 @@ class Selection:
                         dna1,
                         dna2,
                         n_mutations = 1)
-        # Get individual joint subgraphs (stand alone trees)
-        # from the disjoint graph (forest).
+        # Get connected subgraphs (stand alone trees)
+        # from the disconnected graph (forest).
         base_cycle_dnas_trees = list(
-            nx.connected_component_subgraphs(
-                base_cycle_dnas_forest,
-                copy=True))
+            # nx.connected_component_subgraphs(
+            nx.connected_components(
+                base_cycle_dnas_forest))
         
         # to convert list of dnas trees into a list of peptides trees leaves
         peptides_trees_leaves = []
@@ -467,8 +467,8 @@ class Selection:
                 0,
                 '',
                 0,
-                peptide_tree.node[root_peptide]['count'],
-                peptide_tree.node[root_peptide]['first_appearance']
+                peptide_tree.nodes(data='count')[root_peptide],
+                peptide_tree.nodes(data='first_appearance')[root_peptide],
                 ]
             tree_peptides_list = list(peptide_tree.nodes())
             tree_peptides_list.remove(root_peptide)
@@ -481,8 +481,8 @@ class Selection:
                     weight=None)[1]
                 # Predecessor count can be used to sort the peptides.
                 # However, it does not seem to be useful.
-                predecessor_count = peptide_tree.node[peptide_predecessor]['count']
-                peptide_count = peptide_tree.node[peptide]['count']
+                predecessor_count = peptide_tree.nodes(data='count')[peptide_predecessor]
+                peptide_count = peptide_tree.nodes(data='count')[peptide]
 
                 tree_peptides[peptide] = [
                     peptide_predecessor,
@@ -548,7 +548,7 @@ class Selection:
                         YCoordinate = y_x_0_coordinate
                         positions[peptide] = (XCoordinate, YCoordinate)
                         
-            # Get marker size, proportional to peptides occurence in a base cycle.
+            # Get marker size, proportional to peptides occurrence in a base cycle.
             sizes = []
             for peptide in peptide_tree.nodes():
                 sizes.append(

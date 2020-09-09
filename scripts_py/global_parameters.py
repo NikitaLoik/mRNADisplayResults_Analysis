@@ -84,35 +84,35 @@ TOP_PEPTIDES_KDS = {
     }
 
 
-def SelectionSummaryReport(
-    fastqDataFolderLocation, BaseRoundIndex, NumberOfTopPeptides, SelectionSummaryReportFileName):
+def display_summaryReport(
+    data_directory_path, base_cycle, n_top_peptides, file_name):
     
     today = TodaysDate() 
     
-    SelectionSummaryFileNameCSV = str(today) + 'SelectionSummary' + SelectionSummaryReportFileName + '.csv'
-    SelectionSummaryReportFile = open(SelectionSummaryFileNameCSV, 'w')
+    display_summaryFileNameCSV = str(today) + 'display_summary' + file_name + '.csv'
+    display_summaryReportFile = open(display_summaryFileNameCSV, 'w')
     
-    SelectionSummary = CompleteSelectionSummary(fastqDataFolderLocation)
-    SortedRoundsList = sorted(SelectionSummary.keys())
+    display_summary = Completedisplay_summary(data_directory_path)
+    SortedRoundsList = sorted(display_summary.keys())
     
-    Peptides_BY_Round = PeptidesOccurrences_BY_Round(fastqDataFolderLocation)
-    TotalPeptides_BY_Round = TotalReads_BY_Round(fastqDataFolderLocation)
+    peptides_BY_Round = peptidesOccurrences_BY_Round(data_directory_path)
+    Totalpeptides_BY_Round = TotalReads_BY_Round(data_directory_path)
     
-    BaseRoundSortedPeptides = BaseRoundSortedPeptidesList(fastqDataFolderLocation, BaseRoundIndex)
-    #for i in range(len(BaseRoundSortedPeptides)):
-     #   print ('>seq' + str(i + 1) + '\n' + BaseRoundSortedPeptides[i])
-    #BaseRoundTopSortedPeptides = BaseRoundSortedPeptides[0 : (NumberOfTopPeptides)]
-    BaseRoundTopSortedPeptides = ['VWDPRTFYLSRI', 'WDANTIFIKRV', 'WNPRTIFIKRA', 'VWDPRTFYLSRT',
+    BaseRoundSortedpeptides = BaseRoundSortedpeptidesList(data_directory_path, base_cycle)
+    #for i in range(len(BaseRoundSortedpeptides)):
+     #   print ('>seq' + str(i + 1) + '\n' + BaseRoundSortedpeptides[i])
+    #BaseRoundTopSortedpeptides = BaseRoundSortedpeptides[0 : (n_top_peptides)]
+    BaseRoundTopSortedpeptides = ['VWDPRTFYLSRI', 'WDANTIFIKRV', 'WNPRTIFIKRA', 'VWDPRTFYLSRT',
                                 'IWDTGTFYLSRT', 'WWNTRSFYLSRI', 'FWDPRTFYLSRI', 'VWDPSTFYLSRI',
                                 'KWDTRTFYLSRY', 'KWDTRTFYLSRI', 'IWDPRTFYLSRI', 'IWDTGTFYLSRI',
                                 'VWDPRTFYLSRM', 'AWDPRTFYLSRI', 'VWDSRTFYLSRI', 'VWDPGTFYLSRI',
                                 'VWDPRTFYMSRI', 'VWDPRTFYLSRS', 'VWDPRTFYLSRV', 'WNPRTIFIKRV',
                                 'VRDPRTFYLSRI', 'VWDPKTFYLSRI', 'VWDPRTFYLSRN', 'FRFPFYIQRR'
                                  ]
-    BaseRoundPeptidesRank = PeptidesRank_IN_BaseRound(fastqDataFolderLocation, BaseRoundIndex)
-    #print (BaseRoundSortedPeptides)
+    BaseRoundpeptidesRank = peptidesRank_IN_BaseRound(data_directory_path, base_cycle)
+    #print (BaseRoundSortedpeptides)
     
-    Top24PeptidesKDs = {'VWDPRTFYLSRI' : '3', 'WDANTIFIKRV' : '4', 'WNPRTIFIKRA' : '>1000', 'VWDPRTFYLSRT' : '3',
+    Top24peptidesKDs = {'VWDPRTFYLSRI' : '3', 'WDANTIFIKRV' : '4', 'WNPRTIFIKRA' : '>1000', 'VWDPRTFYLSRT' : '3',
                         'IWDTGTFYLSRT' : '7', 'WWNTRSFYLSRI' : '12', 'FWDPRTFYLSRI' : '4', 'VWDPSTFYLSRI' : '3',
                         'KWDTRTFYLSRY' : '5', 'KWDTRTFYLSRI' : '6', 'IWDPRTFYLSRI' : '1', 'VWDPRTFYLSRM' : '4',
                         'IWDTGTFYLSRI' : '>1000', 'VWDPGTFYLSRI' :  '<1', 'VWDSRTFYLSRI' : '3', 'AWDPRTFYLSRI': '6',
@@ -120,43 +120,43 @@ def SelectionSummaryReport(
                         'VRDPRTFYLSRI' : '>1000', 'VWDPRTFYLSRN' : '>1000', 'VWDPKTFYLSRI' : '14', 'FRFPFYIQRR' : '>1000'
                        }
         
-    SelectionSummaryReportFile.write('peptide sequence' + ',' +
+    display_summaryReportFile.write('peptide sequence' + ',' +
                                      'rank (#)' + ',' +
                                      'cDNA mutants' + ',')
     for Round in SortedRoundsList:
-        SelectionSummaryReportFile.write('C' +
+        display_summaryReportFile.write('C' +
                                          str(Round) +
                                          ' count (#) [frequency(%)]' + ',')
-    SelectionSummaryReportFile.write('\n')
+    display_summaryReportFile.write('\n')
     
-    for Peptide in BaseRoundTopSortedPeptides:
-    #for Peptide in Top24PeptidesKDs:
-        BaseRoundPeptideFraction = float((Peptides_BY_Round[Round].get(Peptide, 0)))/float(TotalPeptides_BY_Round[BaseRoundIndex])
-        PeptideRank = BaseRoundPeptidesRank[Peptide]
-        FormatedPeptide = HammingDistanceBasedFormating(BaseRoundTopSortedPeptides[0], Peptide)
-        PeptidecDNAMutants = len(SelectionSummary[BaseRoundIndex][Peptide])
-        SelectionSummaryReportFile.write(FormatedPeptide + ',' +
-                                         str(PeptideRank) + ',' +
-                                         str(PeptidecDNAMutants) + ',')
+    for peptide in BaseRoundTopSortedpeptides:
+    #for peptide in Top24peptidesKDs:
+        BaseRoundpeptideFraction = float((peptides_BY_Round[Round].get(peptide, 0)))/float(Totalpeptides_BY_Round[base_cycle])
+        peptideRank = BaseRoundpeptidesRank[peptide]
+        Formatedpeptide = HammingDistanceBasedFormating(BaseRoundTopSortedpeptides[0], peptide)
+        peptidecDNAMutants = len(display_summary[base_cycle][peptide])
+        display_summaryReportFile.write(Formatedpeptide + ',' +
+                                         str(peptideRank) + ',' +
+                                         str(peptidecDNAMutants) + ',')
 
             
         for Round in SortedRoundsList:
-            PeptideFraction = float((Peptides_BY_Round[Round].get(Peptide, 0)))/float(TotalPeptides_BY_Round[Round])
+            peptideFraction = float((peptides_BY_Round[Round].get(peptide, 0)))/float(Totalpeptides_BY_Round[Round])
 
-            BaseFraction = PeptideFraction
+            BaseFraction = peptideFraction
             
-            SelectionSummaryReportFile.write(str(Peptides_BY_Round[Round].get(Peptide, 0)) +
-                                             ' [' + '{:.1%}'.format(PeptideFraction) + ']' + ',')
+            display_summaryReportFile.write(str(peptides_BY_Round[Round].get(peptide, 0)) +
+                                             ' [' + '{:.1%}'.format(peptideFraction) + ']' + ',')
             
-            BaseFraction = PeptideFraction
-        SelectionSummaryReportFile.write('\n')
+            BaseFraction = peptideFraction
+        display_summaryReportFile.write('\n')
         
-    SelectionSummaryReportFile.write('total count (#)' + ',' + ',')
+    display_summaryReportFile.write('total count (#)' + ',' + ',')
     for Round in SortedRoundsList:
-        SelectionSummaryReportFile.write(str(TotalPeptides_BY_Round[Round]) + ',')
-    SelectionSummaryReportFile.write('\n\n\n')
+        display_summaryReportFile.write(str(Totalpeptides_BY_Round[Round]) + ',')
+    display_summaryReportFile.write('\n\n\n')
             
-    SelectionSummaryReportFile.close()
+    display_summaryReportFile.close()
     
 #-------------------------------------------------------------------------------
    
@@ -173,43 +173,43 @@ def SelectionSummaryReport(
     Ys = []
     
     Rank = 1
-    PeptideFractionInFinalRound = 0
+    peptideFractionInFinalRound = 0
     
     # Map colours onto lines
     
     cNorm  = matplotlib.colors.Normalize(vmin = 0,
-                                         vmax = NumberOfTopPeptides - 1)
+                                         vmax = n_top_peptides - 1)
     scalarMap = matplotlib.cm.ScalarMappable(norm = cNorm,
                                              cmap = 'Paired')
     
-    PeptideLabels = []
+    peptideLabels = []
     
-    for Peptide in BaseRoundTopSortedPeptides:
-    #for Peptide in Top24PeptidesKDs:
-        PeptidesFractions_BY_Round = []
+    for peptide in BaseRoundTopSortedpeptides:
+    #for peptide in Top24peptidesKDs:
+        peptidesFractions_BY_Round = []
         for Round in SortedRoundsList:
-            PeptidesFractions_BY_Round += [float((Peptides_BY_Round[Round].get(Peptide, 0)))/float(TotalPeptides_BY_Round[Round])]
+            peptidesFractions_BY_Round += [float((peptides_BY_Round[Round].get(peptide, 0)))/float(Totalpeptides_BY_Round[Round])]
         
         x = SortedRoundsList
-        y = PeptidesFractions_BY_Round
+        y = peptidesFractions_BY_Round
         Xs += x
         Ys += y
         
-        PeptideColour = scalarMap.to_rgba(BaseRoundTopSortedPeptides.index(Peptide))
+        peptideColour = scalarMap.to_rgba(BaseRoundTopSortedpeptides.index(peptide))
         
-        PeptideRank = str(BaseRoundPeptidesRank[Peptide])
-#         PeptideColour = scalarMap.to_rgba(PeptideRank)
-        PeptideKD = Top24PeptidesKDs[Peptide]
-        FormatedPeptide = HammingDistanceBasedFormating(BaseRoundTopSortedPeptides[0], Peptide)
+        peptideRank = str(BaseRoundpeptidesRank[peptide])
+#         peptideColour = scalarMap.to_rgba(peptideRank)
+        peptideKD = Top24peptidesKDs[peptide]
+        Formatedpeptide = HammingDistanceBasedFormating(BaseRoundTopSortedpeptides[0], peptide)
         
-        PeptideLabel =  FormatedPeptide + ' (' + PeptideRank + ', ' + PeptideKD +' nM)'
+        peptideLabel =  Formatedpeptide + ' (' + peptideRank + ', ' + peptideKD +' nM)'
         
-        #Set PeptideLabel
-        PeptideLabels += [PeptideLabel]
+        #Set peptideLabel
+        peptideLabels += [peptideLabel]
         
         plt.plot(x, y,
                  'o-',
-                 c = PeptideColour,
+                 c = peptideColour,
                  lw = 2.0,
                  ms = 4.0,
                  mew = 0.1,
@@ -228,10 +228,10 @@ def SelectionSummaryReport(
     
     plt.xlabel('Selection Cycle (#)',
                fontsize = 10)
-    plt.ylabel('Peptide Fraction (%)',
+    plt.ylabel('peptide Fraction (%)',
                fontsize = 10)
     
-    legend = plt.legend(PeptideLabels,
+    legend = plt.legend(peptideLabels,
                         title = 'cyclic-peptide random region',
                         loc = 'upper center',
                         bbox_to_anchor = (0.5, -0.10),
@@ -242,9 +242,9 @@ def SelectionSummaryReport(
     
     Graph.get_legend().get_title().set_size('small')
     
-    SelectionSummaryFileNamePNG = str(today) + 'SelectionSummary' + SelectionSummaryReportFileName + '.png'
+    display_summaryFileNamePNG = str(today) + 'display_summary' + file_name + '.png'
     
-    plt.savefig(SelectionSummaryFileNamePNG,
+    plt.savefig(display_summaryFileNamePNG,
                 bbox_extra_artists = [legend],
                 bbox_inches = 'tight',
                 dpi = 300)

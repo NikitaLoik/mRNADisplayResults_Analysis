@@ -106,6 +106,7 @@ def get_single_cycle_data(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     
     with open(fastq_file_path, 'r') as f_in:
@@ -132,6 +133,9 @@ def get_single_cycle_data(
                 stop_sequence,
                 quality_score,)                      
             if coding_sequence != None:
+                if reverse_complement is True:
+                    coding_sequence = get_reverse_complement(
+                        coding_sequence)
                 # translate dna or RNA sequence into peptide
                 peptide = translate(coding_sequence)
                 # add sequence to a single_cycle_data
@@ -194,13 +198,14 @@ def format_sequence_based_on_mismatches(
     return formated_sequence_2
 
 
-def get_complete_selection_summary(
+def get_complete_display_summary(
         data_directory_path: str,
         cdna_min_length: int = gp.CDNA_MIN_LENGTH,
         cdna_max_length: int = gp.CDNA_MAX_LENGTH,
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
     returns the count of coding sequences
@@ -208,8 +213,8 @@ def get_complete_selection_summary(
     {Selectioncycle_X:    {peptideXY:    {Codingdna_XYZ:    count_XYZ}}}
     '''
 
-    # Create an empty selection_summary dictionary to store the results from all the cycles of selection
-    complete_selection_summary = {}
+    # Create an empty display_summary dictionary to store the results from all the cycles of selection
+    complete_display_summary = {}
     
     for file in os.listdir(data_directory_path):
         file_path = os.path.join(data_directory_path, file)
@@ -217,7 +222,7 @@ def get_complete_selection_summary(
         # A. get the cycle number from the file name
         # (file name should have two digit number before full stop — '00.')
         # without the following condition some shit appears in the beginning of the file list  
-        if file.endswith('.fastq'):
+        if file.endswith(('.fastq', '.txt')):
             cycle_number_first_digit = file[file.find('.')-2]
             cycle_number_second_digit = file[file.find('.')-1]
             if cycle_number_first_digit == '0':
@@ -232,12 +237,13 @@ def get_complete_selection_summary(
                 cdna_max_length,
                 start_sequence,
                 stop_sequence,
-                quality_score,)
+                quality_score,
+                reverse_complement)
              
             # C populate complete selection summary
-            complete_selection_summary[cycle_number] = single_cycle_data
+            complete_display_summary[cycle_number] = single_cycle_data
             
-    return complete_selection_summary
+    return complete_display_summary
 
 
 def get_peptides_counts_by_cycle(
@@ -247,59 +253,63 @@ def get_peptides_counts_by_cycle(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
     returns the counts of peptides groupped by cycle:
     {cycle_X:    {peptideXY:    count_XY}}
     '''
-    selection_summary = get_complete_selection_summary(
+    display_summary = get_complete_display_summary(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
         start_sequence,
         stop_sequence,
-        quality_score,)
+        quality_score,
+        reverse_complement)
     
     peptides_counts_by_cycle = {}
-    for cycle in selection_summary:
+    for cycle in display_summary:
         peptides_counts_in_cycle = {}
-        for peptide in selection_summary[cycle]:
+        for peptide in display_summary[cycle]:
             peptides_counts_in_cycle[peptide] = sum(
-                selection_summary[cycle][peptide].values())
+                display_summary[cycle][peptide].values())
         peptides_counts_by_cycle[cycle] = peptides_counts_in_cycle
         
     return peptides_counts_by_cycle
 
 
-def dnas_counts_by_cycle(
+def dna_counts_by_cycle(
         data_directory_path: str,
         cdna_min_length: int = gp.CDNA_MIN_LENGTH,
         cdna_max_length: int = gp.CDNA_MAX_LENGTH,
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
-    returns the counts of dnas groupped by cycle:
+    returns the counts of dna groupped by cycle:
     {cycle_X:    {dna_XY:    count_XY}}
     '''
-    selection_summary = get_complete_selection_summary(
+    display_summary = get_complete_display_summary(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
         start_sequence,
         stop_sequence,
-        quality_score,)
+        quality_score,
+        reverse_complement)
     
-    dnas_counts_by_cycle = {}
-    for cycle in selection_summary:
-        dnas_counts_in_cycle = {}
-        for peptide in selection_summary[cycle]:
-            for dna in selection_summary[cycle][peptide]:
-                dnas_counts_in_cycle[dna] = selection_summary[cycle][peptide][dna]
-        dnas_counts_by_cycle[cycle] = dnas_counts_in_cycle
+    dna_counts_by_cycle = {}
+    for cycle in display_summary:
+        dna_counts_in_cycle = {}
+        for peptide in display_summary[cycle]:
+            for dna in display_summary[cycle][peptide]:
+                dna_counts_in_cycle[dna] = display_summary[cycle][peptide][dna]
+        dna_counts_by_cycle[cycle] = dna_counts_in_cycle
 
-    return dnas_counts_by_cycle
+    return dna_counts_by_cycle
 
 
 def get_total_reads_per_cycle(
@@ -309,18 +319,20 @@ def get_total_reads_per_cycle(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
     returns number of reads per cycle:
     {cycle_X:    total_reads_X}
     '''
-    selection_summary = get_complete_selection_summary(
+    display_summary = get_complete_display_summary(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
         start_sequence,
         stop_sequence,
-        quality_score)
+        quality_score,
+        reverse_complement)
 
     peptides_by_cycle = get_peptides_counts_by_cycle(
         data_directory_path,
@@ -329,16 +341,17 @@ def get_total_reads_per_cycle(
         start_sequence,
         stop_sequence,
         quality_score,
+        reverse_complement,
         )
     
     total_reads_per_cycle = {}
-    for cycle in selection_summary:
+    for cycle in display_summary:
         total_reads_per_cycle[cycle] = sum(peptides_by_cycle[cycle].values())
         
     return total_reads_per_cycle
 
 
-def get_base_cycle_sorted_peptides_list(
+def get_base_cycle_sorted_peptides(
         data_directory_path: str,
         base_cycle: int,
         cdna_min_length: int = gp.CDNA_MIN_LENGTH,
@@ -346,6 +359,7 @@ def get_base_cycle_sorted_peptides_list(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
     returns list of peptides in base cycle sorted by their count:
@@ -359,18 +373,19 @@ def get_base_cycle_sorted_peptides_list(
         start_sequence,
         stop_sequence,
         quality_score,
+        reverse_complement
         )
             
     peptides_counts_in_base_cycle = peptides_by_cycle[
         base_cycle]
-    base_cycle_sorted_peptides_list = sorted(
+    base_cycle_sorted_peptides = sorted(
         peptides_counts_in_base_cycle,
         key=peptides_counts_in_base_cycle.get,
         reverse=True)
-    return base_cycle_sorted_peptides_list
+    return base_cycle_sorted_peptides
 
 
-def get_base_cycle_sorted_dnas_list(
+def get_base_cycle_sorted_dna(
         data_directory_path: str,
         base_cycle: int,
         cdna_min_length: int = gp.CDNA_MIN_LENGTH,
@@ -378,27 +393,29 @@ def get_base_cycle_sorted_dnas_list(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
-    returns list of dnas in base cycle sorted by their count:
+    returns list of dna in base cycle sorted by their count:
     [dna_1, ..., dna_n]; count(dna_1) > ... > count(dna_n)
     '''
-    dnas_by_cycle = dnas_counts_by_cycle(
+    dna_by_cycle = dna_counts_by_cycle(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
         start_sequence,
         stop_sequence,
         quality_score,
+        reverse_complement
         )
             
-    dnas_counts_in_base_cycle = dnas_by_cycle[base_cycle]
-    base_cycle_sorted_dnas_list = sorted(
-        dnas_counts_in_base_cycle,
-        key=dnas_counts_in_base_cycle.get,
+    dna_counts_in_base_cycle = dna_by_cycle[base_cycle]
+    base_cycle_sorted_dna = sorted(
+        dna_counts_in_base_cycle,
+        key=dna_counts_in_base_cycle.get,
         reverse=True)
     
-    return base_cycle_sorted_dnas_list
+    return base_cycle_sorted_dna
 
 
 def get_peptides_rank_in_base_cycle(
@@ -409,6 +426,7 @@ def get_peptides_rank_in_base_cycle(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
 
     peptides_by_cycle = get_peptides_counts_by_cycle(
@@ -418,9 +436,10 @@ def get_peptides_rank_in_base_cycle(
         start_sequence,
         stop_sequence,
         quality_score,
+        reverse_complement
         )
 
-    base_cycle_sorted_peptides = get_base_cycle_sorted_peptides_list(
+    base_cycle_sorted_peptides = get_base_cycle_sorted_peptides(
         data_directory_path,
         base_cycle,
         cdna_min_length,
@@ -428,6 +447,7 @@ def get_peptides_rank_in_base_cycle(
         start_sequence,
         stop_sequence,
         quality_score,
+        reverse_complement
         )
     
     base_peptide_count = 0
@@ -453,32 +473,34 @@ def get_dna_clones_counts_by_cycle_by_peptide(
         start_sequence: str = gp.START_SEQUENCE,
         stop_sequence: str = gp.STOP_SEQUENCE,
         quality_score: int = gp.QUALITY_SCORE,
+        reverse_complement: bool = False,
         ):
     '''
     returns number of clones for each peptide groupped by cycle:
     {Selectioncycle_X:    {peptideXY:    dnaClonescounts}}
     '''
-    selection_summary = get_complete_selection_summary(
+    display_summary = get_complete_display_summary(
         data_directory_path,
         cdna_min_length,
         cdna_max_length,
         start_sequence,
         stop_sequence,
-        quality_score)
+        quality_score,
+        reverse_complement)
     
     dna_clones_counts_by_cycle_by_peptide = {}
-    for cycle in selection_summary:
+    for cycle in display_summary:
         dna_clones_counts_by_peptide = {}
-        for peptide in selection_summary[cycle]:
+        for peptide in display_summary[cycle]:
             dna_clones_counts_by_peptide[peptide] = len(
-                selection_summary[cycle][peptide])
+                display_summary[cycle][peptide])
         dna_clones_counts_by_cycle_by_peptide[cycle] = dna_clones_counts_by_peptide
         
     return dna_clones_counts_by_cycle_by_peptide
 
 
 def get_peptides_appearances_by_cycle(
-        base_cycle_sorted_peptides_list: list,
+        base_cycle_sorted_peptides: list,
         peptides_counts_by_cycle):
     '''
     returns for each peptide in selection a list of cycles in which this peptide appears:
@@ -486,7 +508,7 @@ def get_peptides_appearances_by_cycle(
     '''
     peptides_appearances_by_cycle = {}
     
-    for peptide in base_cycle_sorted_peptides_list:
+    for peptide in base_cycle_sorted_peptides:
         peptides_appearances_by_cycle[peptide] = []
         for cycle in peptides_counts_by_cycle:
             if peptide in peptides_counts_by_cycle[cycle]:
@@ -494,18 +516,46 @@ def get_peptides_appearances_by_cycle(
     return peptides_appearances_by_cycle
 
 
-def dnas_appearances_by_cycle(
-        base_cycle_sorted_dnas_list: list,
-        dnas_counts_by_cycle):
+def get_dna_appearance_by_cycle(
+        base_cycle_sorted_dna: list,
+        dna_counts_by_cycle):
     '''
     which returns for each dna in selection a list of cycles in which this dna appears:
     {dna_x:    [cycle_1, ..., cycle_N]}
     '''
-    dnas_appearances_by_cycle = {}
+    dna_appearance_by_cycle = {}
     
-    for dna in base_cycle_sorted_dnas_list:
-        dnas_appearances_by_cycle[dna] = []
-        for cycle in dnas_counts_by_cycle:
-            if dna in dnas_counts_by_cycle[cycle]:
-                dnas_appearances_by_cycle[dna] += [cycle]
-    return dnas_appearances_by_cycle
+    for dna in base_cycle_sorted_dna:
+        dna_appearance_by_cycle[dna] = []
+        for cycle in dna_counts_by_cycle:
+            if dna in dna_counts_by_cycle[cycle]:
+                dna_appearance_by_cycle[dna] += [cycle]
+    return dna_appearance_by_cycle
+
+
+def get_complementary_sequence(
+        sequence: str
+        ):
+    dna_complement = {'A':'T','C':'G','G':'C','T':'A'}
+    rna_complement = {'A':'U','C':'G','G':'C','U':'A'}
+    
+    complementary_sequence = ''
+    
+    if 'T' in sequence:
+        for i in range(len(sequence)):
+            complementary_sequence += dna_complement[sequence[i]]
+    elif 'U' in sequence:
+        for i in range(len(sequence)):
+            complementary_sequence += rna_complement[sequence[i]]
+    return complementary_sequence
+
+
+def get_reverse_sequence(
+        sequence: str):
+    return sequence[::-1]
+
+
+def get_reverse_complement(
+        sequence: str):
+    return get_reverse_sequence(
+        get_complementary_sequence(sequence))

@@ -9,3 +9,8 @@ The wiki provides a step-by-step explanation on **how the tool works**, how to *
 2. [Set Up the Tool](https://github.com/nikita-loik/mrna-display/wiki/Set-Up-the-Tool)
 3. [Use the Tool](https://github.com/nikita-loik/mrna-display/wiki/Use-the-Tool)
 4. [Remove the Tool](https://github.com/nikita-loik/mrna-display/wiki/Remove-the-Tool)
+
+## Contributors
+[Nikita Loik](https://www.linkedin.com/in/nikita-loik)
+
+## MIT License

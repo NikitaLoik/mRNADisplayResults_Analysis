@@ -1,4 +1,4 @@
-# Display-Techniques Analysis Tool
+# Display-Techniques Analytics Tool
 This is a command-line python tool for monitoring, analysis and visualisation of NGS (next generation sequencing) data derived from display techniques (mRNA or phage display).
 
 For details on how to set up and use this tool, please check out this [wiki](https://github.com/nikita-loik/mrna-display/wiki).

@@ -6,7 +6,7 @@ For details on how to set up and use this tool, please check out this [wiki](htt
 The wiki provides a step-by-step explanation on
 
 1. [how the tool works](https://github.com/nikita-loik/mrna-display/wiki/How-the-Tool-Works)
-2. [how to it up](https://github.com/nikita-loik/mrna-display/wiki/Set-Up-the-Tool)
+2. [how to set it up](https://github.com/nikita-loik/mrna-display/wiki/Set-Up-the-Tool)
 3. [how to use it](https://github.com/nikita-loik/mrna-display/wiki/Use-the-Tool)
 4. [how to remove it](https://github.com/nikita-loik/mrna-display/wiki/Remove-the-Tool) (though, I hope it never comes to this :) ).
 

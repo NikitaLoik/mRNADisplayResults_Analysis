@@ -1,5 +1,5 @@
-# Display-Techniques Analytics Tool
-This is a command-line python tool for monitoring, analysis and visualisation of NGS (next generation sequencing) data derived from [mRNA display](https://en.wikipedia.org/wiki/MRNA_display) or [phage display](https://en.wikipedia.org/wiki/Phage_display).
+# Directed-Evolution Analytics Tool
+This is a command-line python tool for monitoring, analysis and visualisation of NGS (next generation sequencing) data derived from [directed evolution](https://en.wikipedia.org/wiki/Directed_evolution) experiments, including [mRNA display](https://en.wikipedia.org/wiki/MRNA_display) and [phage display](https://en.wikipedia.org/wiki/Phage_display).
 
 For details on how to set up and use this tool, please check out this [wiki](https://github.com/nikita-loik/mrna-display/wiki).
 
@@ -13,4 +13,5 @@ The wiki provides a step-by-step explanation on
 ## Contributors
 [Nikita Loik](https://www.linkedin.com/in/nikita-loik)
 
-## MIT License
+## License
+This tool is covered by MIT license

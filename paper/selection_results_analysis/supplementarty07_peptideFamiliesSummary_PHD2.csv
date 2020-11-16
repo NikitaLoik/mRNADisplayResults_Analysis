@@ -1,207 +1,0 @@
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",2 Mutations,Frequency,Index,"# cDNAMutants"
-vwdprtfylsri,76.63%,1,82,vwdprtfylsrT,2.27%,4,18,AwdprtfylsrT,0.02%,194,1
-,,,,Fwdprtfylsri,0.68%,7,8,FwdpGtfylsri,0.02%,154,1
-,,,,vwdpStfylsri,0.62%,8,4,FwdprtfylsrT,0.02%,151,1
-,,,,Iwdprtfylsri,0.46%,11,6,IwdprtfylsrT,0.02%,158,1
-,,,,vwdprtfylsrM,0.39%,12,2,vRdprtSylsri,0.02%,91,1
-,,,,vwdSrtfylsri,0.32%,14,5,vRdprtLylsri,0.02%,93,1
-,,,,Awdprtfylsri,0.32%,16,7,vwdpKtfylPri,0.02%,205,1
-,,,,vwdpGtfylsri,0.32%,15,8,vwdpKtfylsrT,0.02%,204,1
-,,,,vwdprtfylsrS,0.29%,17,7,Awdprtf#lsri,0.02%,162,1
-,,,,vwdprtfylsrV,0.29%,19,6,vwdprtfHlsrT,0.02%,148,1
-,,,,vwdprtfyMsri,0.29%,18,5,vwdprtfylPrT,0.02%,200,1
-,,,,vRdprtfylsri,0.25%,21,7,vwdprtfylsGT,0.02%,178,1
-,,,,vwdpKtfylsri,0.23%,23,4,IwdprtfylsrM,0.02%,144,1
-,,,,vwdprtfylsrN,0.23%,22,5,vwdpGtfylsrT,0.02%,137,1
-,,,,vwdprtSylsri,0.20%,28,5,vwdTrtfylsrV,0.02%,134,1
-,,,,vwdprtfySsri,0.20%,25,3,vwGprtfyMsri,0.02%,85,1
-,,,,vwdprtLylsri,0.20%,26,4,vwdprtfyMsrT,0.02%,115,1
-,,,,vwdpWtfylsri,0.20%,27,3,vwdprtLySsri,0.02%,164,1
-,,,,vwNprtfylsri,0.18%,29,3,FwdpStfylsri,0.04%,67,2
-,,,,vwdprtfylPri,0.16%,31,3,vwdpStfylsrT,0.02%,192,1
-,,,,vwdprtfylsrY,0.14%,33,3,vwdpStfylsGi,0.02%,199,1
-,,,,vwdprMfylsri,0.14%,34,5,,,,
-,,,,vwGprtfylsri,0.14%,35,2,,,,
-,,,,vwdprtfHlsri,0.12%,36,4,,,,
-,,,,vwdLrtfylsri,0.12%,38,4,,,,
-,,,,vwdprtfylsGi,0.11%,39,4,,,,
-,,,,vwdprtfylsKi,0.11%,41,3,,,,
-,,,,v&dprtfylsri,0.11%,40,4,,,,
-,,,,vwdprtfClsri,0.11%,44,2,,,,
-,,,,vwdprAfylsri,0.11%,43,2,,,,
-,,,,vwdprtfylTri,0.09%,47,3,,,,
-,,,,vwdprtfylFri,0.07%,50,1,,,,
-,,,,vwdprtYylsri,0.07%,51,3,,,,
-,,,,vwdprtfFlsri,0.05%,54,2,,,,
-,,,,vwdArtfylsri,0.05%,56,2,,,,
-,,,,vwdprtf#lsri,0.05%,55,1,,,,
-,,,,vwdprtfy*sri,0.05%,52,1,,,,
-,,,,vwdprtfNlsri,0.04%,70,2,,,,
-,,,,vwdprtfylsrF,0.04%,63,2,,,,
-,,,,Lwdprtfylsri,0.04%,66,2,,,,
-,,,,vwdprtIylsri,0.04%,73,2,,,,
-,,,,v*dprtfylsri,0.04%,60,1,,,,
-,,,,Dwdprtfylsri,0.04%,76,2,,,,
-,,,,vwdprtVylsri,0.02%,118,1,,,,
-,,,,vwdprtfylsMi,0.02%,180,1,,,,
-,,,,vwdprSfylsri,0.02%,143,1,,,,
-,,,,vGdprtfylsri,0.02%,128,1,,,,
-,,,,vwdprtfylsSi,0.02%,87,1,,,,
-,,,,vwdpTtfylsri,0.02%,195,1,,,,
-,,,,Twdprtfylsri,0.02%,175,1,,,,
-,,,,vwdprKfylsri,0.02%,107,1,,,,
-,,,,vCdprtfylsri,0.02%,153,1,,,,
-,,,,vwEprtfylsri,0.02%,166,1,,,,
-,,,,vwdprtfylsWi,0.02%,202,1,,,,
-,,,,vLdprtfylsri,0.02%,136,1,,,,
-,,,,vwdQrtfylsri,0.02%,197,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-wdantifikrv,3.14%,2,13,wdVntifikrv,0.11%,45,3,,,,
-,,,,wdantifiErv,0.07%,49,2,,,,
-,,,,wdantifVkrv,0.04%,83,1,,,,
-,,,,wdantifiRrv,0.04%,62,1,,,,
-,,,,wdaKtifikrv,0.04%,80,2,,,,
-,,,,wdantVfikrv,0.02%,101,1,,,,
-,,,,wdantiSikrv,0.02%,108,1,,,,
-,,,,wdantiYikrv,0.02%,92,1,,,,
-,,,,wdTntifikrv,0.02%,99,1,,,,
-,,,,wdaStifikrv,0.02%,189,1,,,,
-,,,,wdantifikrA,0.02%,102,1,,,,
-,,,,wdantifikGv,0.02%,112,1,,,,
-,,,,wdantTfikrv,0.02%,95,1,,,,
-,,,,Cdantifikrv,0.02%,179,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",2 Mutations,Frequency,Index,"# cDNAMutants"
-wnprtifikra,2.36%,3,13,wnprtifikrV,0.25%,20,3,wnprtifiRrD,0.02%,100,1
-,,,,wnprtifiRra,0.04%,79,2,,,,
-,,,,wnprtifiEra,0.04%,68,2,,,,
-,,,,wnprtiLikra,0.04%,77,2,,,,
-,,,,wnprtifikrT,0.04%,74,2,,,,
-,,,,wYprtifikra,0.02%,130,1,,,,
-,,,,wnprtifTkra,0.02%,147,1,,,,
-,,,,wnprtifi*ra,0.02%,98,1,,,,
-,,,,wnprtifikrG,0.02%,109,1,,,,
-,,,,wnprtiCikra,0.02%,142,1,,,,
-,,,,wnpQtifikra,0.02%,152,1,,,,
-,,,,*nprtifikra,0.02%,129,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",2 Mutations,Frequency,Index,"# cDNAMutants"
-iwdtgtfylsrt,1.12%,5,11,iwdtgtfylsrI,0.39%,13,5,iwdSgtfylsrI,0.02%,121,1
-,,,,Vwdtgtfylsrt,0.04%,81,1,iwdtgtfylPrI,0.02%,139,1
-,,,,iwdtgtSylsrt,0.02%,117,1,FwdtgtfylsrI,0.02%,124,1
-,,,,iwdtgtfHlsrt,0.02%,113,1,,,,
-,,,,iwdtStfylsrt,0.02%,105,1,,,,
-,,,,Fwdtgtfylsrt,0.02%,196,1,,,,
-,,,,iwdtAtfylsrt,0.02%,110,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-wwntrsfylsri,0.95%,6,12,wwntrsfylsrS,0.04%,61,2,,,,
-,,,,Rwntrsfylsri,0.04%,75,1,,,,
-,,,,wwntrsfylsrT,0.04%,71,2,,,,
-,,,,wwntrsfylsrV,0.02%,120,1,,,,
-,,,,w*ntrsfylsri,0.02%,84,1,,,,
-,,,,Swntrsfylsri,0.02%,159,1,,,,
-,,,,wwntrsfylsPi,0.02%,97,1,,,,
-,,,,*wntrsfylsri,0.02%,140,1,,,,
-,,,,wwntrsfylLri,0.02%,155,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-frfpfyiqrr,0.20%,24,3,frfpfyiqrS,0.04%,69,1,,,,
-,,,,Vrfpfyiqrr,0.02%,165,1,,,,
-,,,,frLpfyiqrr,0.02%,116,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-kwdtrtfylsri,0.52%,10,8,kwdtrtfySsri,0.02%,104,1,,,,
-,,,,kwdtrtfylsGi,0.02%,90,1,,,,
-,,,,*wdtrtfylsri,0.02%,184,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-wdpatmfivrrc,0.12%,37,4,wdpatmfivrrR,0.02%,167,1,,,,
-,,,,wdpatLfivrrc,0.02%,176,1,,,,
-,,,,wdpatmfiArrc,0.02%,186,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-kwdtrtfylsry,0.55%,9,6,kwdtrAfylsry,0.02%,190,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-ecavqrwyryl,0.09%,46,3,ecavqrwyryP,0.02%,135,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-rtwplyipmy,0.05%,57,2,rtwplyipmH,0.02%,127,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-wdtstiyvrrq,0.04%,59,2,wdtstVyvrrq,0.02%,126,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-wihtyyihrt,0.09%,48,3,wihtHyihrt,0.02%,141,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",1 Mutation,Frequency,Index,"# cDNAMutants",,,,
-vwntntfiisrn,0.05%,53,2,Lwntntfiisrn,0.02%,191,1,,,,
-,,,,,,,,,,,
-0 Mutations,Frequency,Index,"# cDNAMutants",,,,,,,,
-vwdprtsylsri,0.20%,28,5,,,,,,,,
-dcrdtefssv,0.02%,123,1,,,,,,,,
-iwdtdtfylsrt,0.04%,65,2,,,,,,,,
-wwntrsfylsri,0.95%,6,12,,,,,,,,
-vwdtrtfylsry,0.04%,72,2,,,,,,,,
-mpydgthcd,0.02%,106,1,,,,,,,,
-fawgtipt,0.02%,168,1,,,,,,,,
-dvvkfavivwcy,0.02%,157,1,,,,,,,,
-msnlhrays,0.02%,103,1,,,,,,,,
-lvilvigf,0.02%,183,1,,,,,,,,
-vnlisiflmts,0.02%,163,1,,,,,,,,
-twdtgtfylsrt,0.02%,86,1,,,,,,,,
-vmtksvfqmwsr,0.04%,58,1,,,,,,,,
-iwdtgtfylsri,0.39%,13,5,,,,,,,,
-*daflshn,0.02%,88,1,,,,,,,,
-vmtksvfqiwsr,0.02%,160,1,,,,,,,,
-lvdrtdtqrv,0.02%,122,1,,,,,,,,
-wnpasiyitrr,0.16%,32,2,,,,,,,,
-vwdprmfylsri,0.14%,34,5,,,,,,,,
-wnsfilsrathk,0.04%,64,1,,,,,,,,
-iwdtgtfylsra,0.02%,132,1,,,,,,,,
-qcvyylni,0.02%,131,1,,,,,,,,
-twalvifwc,0.02%,89,1,,,,,,,,
-tinvkl*qc,0.02%,146,1,,,,,,,,
-wdpatmfivrr&,0.02%,161,1,,,,,,,,
-ftypfwiarr,0.16%,30,2,,,,,,,,
-itsyyfsrlyg,0.11%,42,2,,,,,,,,
-vwdprtfylyrn,0.02%,169,1,,,,,,,,
-tliivvtmhyi,0.02%,187,1,,,,,,,,
-vrdsrtfylsri,0.02%,125,1,,,,,,,,
-wpnresyylsri,0.04%,78,1,,,,,,,,
-vvnhwpptinrg,0.02%,174,1,,,,,,,,
-lqklncsyqdd,0.02%,172,1,,,,,,,,
-fyisrihwpys,0.02%,181,1,,,,,,,,
-wwntrsfylsri,0.95%,6,12,,,,,,,,
-vivvllisel,0.02%,177,1,,,,,,,,
-qrdvap*irgnm,0.02%,114,1,,,,,,,,
-wdvntifikrv,0.11%,45,3,,,,,,,,
-kwdtrtfylsky,0.02%,171,1,,,,,,,,
-#rgdihmvwdprtfylsri,0.02%,145,1,,,,,,,,
-v*hsdrlc,0.02%,170,1,,,,,,,,
-vrryiadlsmg,0.02%,149,1,,,,,,,,
-vmwnmlmtvfv,0.02%,182,1,,,,,,,,
-wpnresyymsra,0.02%,185,1,,,,,,,,
-vwdprtlylsrt,0.02%,111,1,,,,,,,,
-awdprtfylsri,0.32%,16,7,,,,,,,,
-ivfciipr,0.04%,82,1,,,,,,,,
-vwdpstsylsri,0.02%,193,1,,,,,,,,
-evpyrn*sdsc,0.02%,173,1,,,,,,,,
-pkpskpptrnl,0.02%,198,1,,,,,,,,
-iwdtdtfylsrt,0.04%,65,2,,,,,,,,
-wdtstiyvrrr,0.02%,150,1,,,,,,,,
-plqrksla,0.02%,133,1,,,,,,,,
-gwnprtfylsri,0.02%,96,1,,,,,,,,
-kwdtrtfylsri,0.52%,10,8,,,,,,,,
-e*sg*ntypnys,0.02%,188,1,,,,,,,,
-iwdprtfylsri,0.46%,11,6,,,,,,,,
-wwntrsyylsri,0.02%,119,1,,,,,,,,
-wthtfyirrv,0.02%,201,1,,,,,,,,
-dktgvl*d,0.02%,203,1,,,,,,,,
-swntrsfylsqi,0.02%,206,1,,,,,,,,
-miirfsllllfg,0.02%,156,1,,,,,,,,
-rlyvlvliak,0.02%,94,1,,,,,,,,
-kwdtrtfylsri,0.52%,10,8,,,,,,,,
-whvelmliis,0.02%,138,1,,,,,,,,
